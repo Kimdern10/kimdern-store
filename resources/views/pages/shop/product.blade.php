@@ -5,6 +5,7 @@ use App\Livewire\Concerns\InteractsWithShop;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Review;
+use App\Models\StockAlert;
 use App\Support\Seo;
 use Flux\Flux;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,6 +34,10 @@ new #[Layout('layouts::shop')] class extends Component {
 
     public bool $reviewSent = false;
 
+    public string $alertEmail = '';
+
+    public bool $alertSaved = false;
+
     public function mount(Product $product): void
     {
         abort_unless($product->is_active, 404);
@@ -44,6 +49,9 @@ new #[Layout('layouts::shop')] class extends Component {
         $colours = $this->product->colours();
         $this->size = $sizes->count() === 1 ? $sizes->first() : null;
         $this->colour = $colours->count() === 1 ? $colours->keys()->first() : null;
+
+        $this->alertEmail = (string) Auth::user()?->email;
+        $this->rememberViewed($product);
 
         Seo::set(
             $product->meta_title ?: $product->name,
@@ -118,6 +126,45 @@ new #[Layout('layouts::shop')] class extends Component {
         return $this->product->reviews()->where('is_approved', true)->latest()->limit(20)->get();
     }
 
+    /**
+     * Keep the last few products this visitor looked at, newest first.
+     */
+    private function rememberViewed(Product $product): void
+    {
+        $ids = collect(session('recently_viewed', []))->reject(fn ($id) => (int) $id === $product->id)->prepend($product->id)->take(9)->values()->all();
+        session()->put('recently_viewed', $ids);
+    }
+
+    /** @return Collection<int, Product> */
+    #[Computed]
+    public function recentlyViewed(): Collection
+    {
+        $ids = collect(session('recently_viewed', []))->map(fn ($id) => (int) $id)->reject(fn (int $id) => $id === $this->product->id)->take(4)->values();
+
+        if ($ids->isEmpty()) {
+            return new Collection;
+        }
+
+        return Product::query()->forCards()->whereIn('id', $ids)->get()->sortBy(fn (Product $p) => $ids->search($p->id))->values();
+    }
+
+    /**
+     * "Email me when it is back": saved once per email and option.
+     */
+    public function requestStockAlert(): void
+    {
+        $this->validate(['alertEmail' => ['required', 'email:rfc', 'max:255']], [], ['alertEmail' => 'email']);
+
+        StockAlert::query()->firstOrCreate([
+            'product_id' => $this->product->id,
+            'product_variant_id' => $this->variant?->id,
+            'email' => strtolower(trim($this->alertEmail)),
+            'notified_at' => null,
+        ]);
+
+        $this->alertSaved = true;
+    }
+
     /** @return Collection<int, Product> */
     #[Computed]
     public function related(): Collection
@@ -175,8 +222,8 @@ new #[Layout('layouts::shop')] class extends Component {
 
     <div class="container-shop pt-6">
         <nav class="text-sm text-zinc-500" aria-label="Breadcrumb">
-            <a href="{{ route('home') }}" class="hover:text-brand-700">Home</a> <span class="mx-1">/</span>
-            <a href="{{ route('category', $product->category) }}" class="hover:text-brand-700">{{ $product->category->name }}</a> <span class="mx-1">/</span>
+            <a href="{{ route('home') }}" wire:navigate class="hover:text-brand-700">Home</a> <span class="mx-1">/</span>
+            <a href="{{ route('category', $product->category) }}" wire:navigate class="hover:text-brand-700">{{ $product->category->name }}</a> <span class="mx-1">/</span>
             <span class="text-zinc-800 dark:text-zinc-200">{{ $product->name }}</span>
         </nav>
 
@@ -287,6 +334,21 @@ new #[Layout('layouts::shop')] class extends Component {
                         @endif
                     </div>
 
+                    @if ($this->stockLeft === 0 || ($this->stockLeft === null && ! $product->inStock()))
+                        <div class="rounded-2xl bg-white p-4 ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-800" wire:key="stock-alert-{{ $this->variant?->id ?? 'all' }}">
+                            @if ($alertSaved)
+                                <p class="flex items-center gap-2 text-sm font-semibold text-brand-700 dark:text-brand-400"><flux:icon.bell-alert variant="micro" /> Done! We'll email {{ $alertEmail }} when it's back.</p>
+                            @else
+                                <p class="text-sm font-semibold">Sold out{{ $this->variant ? ' in '.$this->variant->label() : '' }}. Get an email when it's back:</p>
+                                <div class="mt-3 flex gap-2">
+                                    <flux:input wire:model="alertEmail" type="email" placeholder="Your email" aria-label="Email for stock alert" class="flex-1" />
+                                    <flux:button type="button" wire:click="requestStockAlert" icon="bell">Notify me</flux:button>
+                                </div>
+                                @error('alertEmail')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+                            @endif
+                        </div>
+                    @endif
+
                     <div class="flex gap-3">
                         <div class="flex h-13 items-center rounded-full border-2 bg-white dark:bg-zinc-900">
                             <button type="button" wire:click="$set('quantity', {{ max(1, $quantity - 1) }})" class="grid size-12 place-items-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800" aria-label="One less"><flux:icon.minus variant="micro" /></button>
@@ -330,7 +392,7 @@ new #[Layout('layouts::shop')] class extends Component {
                                 <li><strong>{{ $zone->name }}:</strong> {{ naira($zone->fee) }} · {{ $zone->eta }}@if ($zone->free_over) · free over {{ naira($zone->free_over) }}@endif</li>
                             @endforeach
                         </ul>
-                        <p>Not happy? Return unused items in their original packaging within 7 days of delivery. <a href="{{ route('shipping') }}" class="font-semibold text-brand-700 underline dark:text-brand-400">Read the full policy</a>.</p>
+                        <p>Not happy? Return unused items in their original packaging within 7 days of delivery. <a href="{{ route('shipping') }}" wire:navigate class="font-semibold text-brand-700 underline dark:text-brand-400">Read the full policy</a>.</p>
                     </div>
                 </div>
             </div>
@@ -380,7 +442,7 @@ new #[Layout('layouts::shop')] class extends Component {
                             </form>
                         @endif
                     @else
-                        <p class="text-sm text-zinc-600 dark:text-zinc-400">Bought this? <a href="{{ route('login') }}" class="font-semibold text-brand-700 underline dark:text-brand-400">Log in</a> to write a review.</p>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400">Bought this? <a href="{{ route('login') }}" wire:navigate class="font-semibold text-brand-700 underline dark:text-brand-400">Log in</a> to write a review.</p>
                     @endauth
                 </div>
             </div>
@@ -413,6 +475,18 @@ new #[Layout('layouts::shop')] class extends Component {
             <h2 id="related-title" class="text-2xl font-extrabold text-brand-950 sm:text-3xl dark:text-white" data-reveal>You may also like</h2>
             <div class="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
                 @foreach ($this->related as $i => $item)
+                    <x-product-card :product="$item" :wishlisted="in_array($item->id, $this->wishlistIds)" :delay="$i * 80" />
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    {{-- Recently viewed --}}
+    @if ($this->recentlyViewed->isNotEmpty())
+        <section class="container-shop mt-24" aria-labelledby="recent-title">
+            <h2 id="recent-title" class="text-2xl font-extrabold text-brand-950 sm:text-3xl dark:text-white" data-reveal>Recently viewed</h2>
+            <div class="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
+                @foreach ($this->recentlyViewed as $i => $item)
                     <x-product-card :product="$item" :wishlisted="in_array($item->id, $this->wishlistIds)" :delay="$i * 80" />
                 @endforeach
             </div>

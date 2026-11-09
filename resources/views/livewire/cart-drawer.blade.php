@@ -84,11 +84,11 @@ new class extends Component {
                     <ul class="flex-1 divide-y overflow-y-auto px-5">
                         @foreach ($this->cart->lines() as $line)
                             <li wire:key="drawer-{{ $line->key }}" class="flex gap-4 py-4">
-                                <a href="{{ route('product', $line->product) }}" class="shrink-0">
+                                <a href="{{ route('product', $line->product) }}" wire:navigate class="shrink-0">
                                     <img src="{{ $line->product->imageUrl() }}" alt="{{ $line->product->name }}" class="size-20 rounded-xl object-cover" loading="lazy">
                                 </a>
                                 <div class="flex min-w-0 flex-1 flex-col">
-                                    <a href="{{ route('product', $line->product) }}" class="truncate font-semibold hover:text-brand-700 dark:hover:text-brand-400">{{ $line->product->name }}</a>
+                                    <a href="{{ route('product', $line->product) }}" wire:navigate class="truncate font-semibold hover:text-brand-700 dark:hover:text-brand-400">{{ $line->product->name }}</a>
                                     @if ($line->variantLabel())
                                         <p class="text-xs text-zinc-500">{{ $line->variantLabel() }}</p>
                                     @endif

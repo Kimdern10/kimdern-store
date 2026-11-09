@@ -28,17 +28,31 @@ it('downloads the PDF receipt through the signed link', function () {
 it('finds an order by number and email', function () {
     $order = Order::factory()->create(['number' => 'KDS-ABC1234', 'email' => 'ada@example.com']);
 
-    $this->get(route('orders.track', ['number' => 'kds-abc1234', 'email' => 'ADA@example.com']))
+    Livewire::test('pages::shop.track-order')
+        ->set('number', 'kds-abc1234')
+        ->set('email', 'ADA@example.com')
+        ->call('find')
         ->assertRedirect($order->trackingUrl());
 });
 
 it('does not reveal an order when the email does not match', function () {
     Order::factory()->create(['number' => 'KDS-ABC1234', 'email' => 'ada@example.com']);
 
-    $this->from(route('orders.track'))
-        ->get(route('orders.track', ['number' => 'KDS-ABC1234', 'email' => 'someone@else.com']))
-        ->assertRedirect(route('orders.track'))
-        ->assertSessionHasErrors('number');
+    Livewire::test('pages::shop.track-order')
+        ->set('number', 'KDS-ABC1234')
+        ->set('email', 'someone@else.com')
+        ->call('find')
+        ->assertHasErrors('number')
+        ->assertNoRedirect();
+});
+
+it('refreshes the order page by itself when the shop updates the order', function () {
+    $order = Order::factory()->create();
+    $page = Livewire::test('pages::shop.order', ['order' => $order])->assertSee('We have your order and are waiting for payment.');
+
+    $order->update(['status' => 'shipped']);
+
+    $page->call('refreshOrder')->assertSee('Your parcel is on its way.');
 });
 
 describe('customer account', function () {

@@ -81,7 +81,7 @@
                         <img src="{{ $item->imageUrl() }}" alt="" class="size-16 rounded-xl object-cover">
                         <div class="min-w-0 flex-1">
                             @if ($item->product)
-                                <a href="{{ route('product', $item->product) }}" class="font-semibold hover:text-brand-700">{{ $item->name }}</a>
+                                <a href="{{ route('product', $item->product) }}" wire:navigate class="font-semibold hover:text-brand-700">{{ $item->name }}</a>
                             @else
                                 <p class="font-semibold">{{ $item->name }}</p>
                             @endif

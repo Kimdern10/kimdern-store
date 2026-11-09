@@ -26,7 +26,7 @@ class Category extends Model
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
 
-    public const array DEPARTMENTS = ['beauty' => 'Beauty', 'fashion' => 'Fashion'];
+    public const array DEPARTMENTS = ['beauty' => 'Beauty', 'hair' => 'Hair', 'fashion' => 'Fashion'];
 
     protected function casts(): array
     {

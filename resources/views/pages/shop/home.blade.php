@@ -49,6 +49,30 @@ new #[Layout('layouts::shop')] class extends Component {
 
     /** @return Collection<int, Product> */
     #[Computed]
+    public function flashSale(): Collection
+    {
+        if (! \App\Models\Setting::flashSaleEndsAt()) {
+            return new Collection;
+        }
+
+        return Product::query()->forCards()
+            ->whereNotNull('compare_at_price')->whereColumn('compare_at_price', '>', 'price')
+            ->orderByRaw('(compare_at_price - price) * 1.0 / compare_at_price desc')
+            ->limit(8)->get();
+    }
+
+    /** @return Collection<int, Product> */
+    #[Computed]
+    public function hairPicks(): Collection
+    {
+        return Product::query()->forCards()
+            ->whereHas('category', fn ($q) => $q->where('department', 'hair'))
+            ->orderByDesc('is_featured')->orderByDesc('sales_count')
+            ->limit(4)->get();
+    }
+
+    /** @return Collection<int, Product> */
+    #[Computed]
     public function bestSellers(): Collection
     {
         return Product::query()->forCards()->orderByDesc('sales_count')->limit(4)->get();
@@ -103,7 +127,7 @@ new #[Layout('layouts::shop')] class extends Component {
                                         {{ $banner->button_text ?: 'Shop now' }} <flux:icon.arrow-right variant="micro" />
                                     </a>
                                 @endif
-                                <a href="{{ route('shop') }}" class="inline-flex h-13 items-center rounded-full border border-white/30 px-7 font-semibold text-white backdrop-blur transition hover:bg-white/10">Browse all</a>
+                                <a href="{{ route('shop') }}" wire:navigate class="inline-flex h-13 items-center rounded-full border border-white/30 px-7 font-semibold text-white backdrop-blur transition hover:bg-white/10">Browse all</a>
                             </div>
                         </div>
                     </div>
@@ -139,6 +163,48 @@ new #[Layout('layouts::shop')] class extends Component {
         </div>
     </section>
 
+    {{-- Flash sale --}}
+    @if ($this->flashSale->isNotEmpty() && ($endsAt = \App\Models\Setting::flashSaleEndsAt()))
+        <section class="mt-16" aria-labelledby="flash-heading"
+            x-data="{
+                end: {{ $endsAt->getTimestampMs() }}, left: { d: '00', h: '00', m: '00', s: '00' }, over: false,
+                tick() {
+                    const ms = Math.max(0, this.end - Date.now());
+                    if (ms === 0) { this.over = true }
+                    const pad = (n) => String(n).padStart(2, '0');
+                    this.left = { d: pad(Math.floor(ms / 864e5)), h: pad(Math.floor(ms / 36e5) % 24), m: pad(Math.floor(ms / 6e4) % 60), s: pad(Math.floor(ms / 1e3) % 60) };
+                },
+            }"
+            x-init="tick(); setInterval(() => tick(), 1000)"
+            x-show="! over"
+        >
+            <div class="container-shop">
+                <div class="flex flex-col gap-5 rounded-[2rem] bg-gradient-to-r from-amber-500 via-amber-400 to-orange-400 p-6 text-brand-950 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+                    <div class="flex items-center gap-4">
+                        <span class="grid size-14 shrink-0 animate-pulse place-items-center rounded-2xl bg-brand-950 text-amber-400"><flux:icon.bolt class="size-7" /></span>
+                        <div>
+                            <p class="text-xs font-extrabold tracking-widest uppercase opacity-80">Limited time</p>
+                            <h2 id="flash-heading" class="text-2xl font-extrabold sm:text-3xl">{{ \App\Models\Setting::get('flash_sale_title') ?: 'Flash sale' }}</h2>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2" role="timer" aria-label="Time left in the sale">
+                        <template x-for="[label, key] in [['Days', 'd'], ['Hrs', 'h'], ['Min', 'm'], ['Sec', 's']]" :key="key">
+                            <div class="flex w-16 flex-col items-center rounded-2xl bg-brand-950 py-2 text-white">
+                                <span class="text-2xl font-extrabold tabular-nums" x-text="left[key]"></span>
+                                <span class="text-[10px] tracking-widest text-amber-300 uppercase" x-text="label"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div class="no-scrollbar mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 sm:gap-6 sm:px-6 lg:px-[max(2rem,calc((100vw-80rem)/2+2rem))]">
+                @foreach ($this->flashSale as $product)
+                    <x-product-card :product="$product" :wishlisted="in_array($product->id, $this->wishlistIds)" class="w-[46%] shrink-0 snap-start sm:w-[30%] lg:w-[23%]" />
+                @endforeach
+            </div>
+        </section>
+    @endif
+
     {{-- Categories --}}
     <section class="container-shop mt-20" aria-labelledby="categories-heading">
         <div class="flex items-end justify-between gap-4" data-reveal>
@@ -146,11 +212,11 @@ new #[Layout('layouts::shop')] class extends Component {
                 <p class="text-sm font-bold tracking-widest text-amber-600 uppercase dark:text-amber-400">Shop by category</p>
                 <h2 id="categories-heading" class="mt-1 text-3xl font-extrabold tracking-tight text-brand-950 sm:text-4xl dark:text-white">What are you shopping for?</h2>
             </div>
-            <a href="{{ route('shop') }}" class="hidden shrink-0 font-semibold text-brand-700 hover:underline sm:block dark:text-brand-400">View all →</a>
+            <a href="{{ route('shop') }}" wire:navigate class="hidden shrink-0 font-semibold text-brand-700 hover:underline sm:block dark:text-brand-400">View all →</a>
         </div>
         <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
             @foreach ($this->categories as $i => $category)
-                <a href="{{ route('category', $category) }}" data-reveal="{{ ($i % 4) * 80 }}" class="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-zinc-200 sm:aspect-square dark:bg-zinc-800">
+                <a href="{{ route('category', $category) }}" wire:navigate data-reveal="{{ ($i % 4) * 80 }}" class="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-zinc-200 sm:aspect-square dark:bg-zinc-800">
                     @if ($category->imageUrl())
                         <img src="{{ $category->imageUrl() }}" alt="" loading="lazy" class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-110">
                     @endif
@@ -166,6 +232,11 @@ new #[Layout('layouts::shop')] class extends Component {
                     </div>
                 </a>
             @endforeach
+            <a href="{{ route('shop') }}" wire:navigate data-reveal="240" class="group flex aspect-[4/3] flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed border-brand-200 bg-brand-50/60 p-4 text-center transition hover:border-brand-500 hover:bg-brand-50 sm:aspect-square dark:border-brand-900 dark:bg-brand-950/30">
+                <span class="grid size-14 place-items-center rounded-full bg-brand-700 text-white transition group-hover:scale-110"><flux:icon.squares-2x2 /></span>
+                <span class="text-lg font-bold text-brand-900 dark:text-white">Shop everything</span>
+                <span class="text-sm text-zinc-500">{{ \App\Models\Product::query()->active()->count() }} products</span>
+            </a>
         </div>
     </section>
 
@@ -177,7 +248,7 @@ new #[Layout('layouts::shop')] class extends Component {
                     <p class="text-sm font-bold tracking-widest text-amber-600 uppercase dark:text-amber-400">Hand-picked for you</p>
                     <h2 id="featured-heading" class="mt-1 text-3xl font-extrabold tracking-tight text-brand-950 sm:text-4xl dark:text-white">Featured products</h2>
                 </div>
-                <a href="{{ route('shop') }}" class="hidden shrink-0 font-semibold text-brand-700 hover:underline sm:block dark:text-brand-400">Shop all →</a>
+                <a href="{{ route('shop') }}" wire:navigate class="hidden shrink-0 font-semibold text-brand-700 hover:underline sm:block dark:text-brand-400">Shop all →</a>
             </div>
             <div class="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
                 @foreach ($this->featured as $i => $product)
@@ -187,10 +258,36 @@ new #[Layout('layouts::shop')] class extends Component {
         </section>
     @endif
 
+    {{-- Hair studio --}}
+    @if ($this->hairPicks->isNotEmpty())
+        <section class="container-shop mt-24" aria-labelledby="hair-heading">
+            <div class="overflow-hidden rounded-[2rem] bg-gradient-to-br from-zinc-950 via-brand-950 to-zinc-900 p-6 text-white sm:p-10 lg:p-12">
+                <div class="grid gap-10 lg:grid-cols-[22rem_1fr] lg:items-center">
+                    <div data-reveal>
+                        <p class="text-sm font-bold tracking-widest text-amber-400 uppercase">The Hair Studio</p>
+                        <h2 id="hair-heading" class="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Wigs, braids & everything hair</h2>
+                        <p class="mt-3 text-white/75">Bone straight, body wave, curly and bobs in lengths from 10 to 22 inches. Human hair options, packed discreetly and delivered nationwide.</p>
+                        <div class="mt-6 flex flex-wrap gap-2">
+                            @foreach ($this->categories->where('department', 'hair') as $hairCategory)
+                                <a href="{{ route('category', $hairCategory) }}" wire:navigate class="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:border-amber-400 hover:bg-amber-400 hover:text-brand-950">{{ $hairCategory->name }}</a>
+                            @endforeach
+                        </div>
+                        <a href="{{ route('shop', ['department' => 'hair']) }}" wire:navigate class="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-amber-500 px-6 font-bold text-brand-950 transition hover:-translate-y-0.5 hover:bg-amber-400">Shop all hair <flux:icon.arrow-right variant="micro" /></a>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-5 xl:grid-cols-4 [&_h3]:text-white [&_.text-brand-900]:!text-amber-300">
+                        @foreach ($this->hairPicks as $i => $product)
+                            <x-product-card :product="$product" :wishlisted="in_array($product->id, $this->wishlistIds)" :delay="$i * 80" />
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+
     {{-- Beauty / Fashion split --}}
     <section class="container-shop mt-24 grid gap-5 lg:grid-cols-2" aria-label="Departments">
         @foreach ([['beauty', 'Beauty edit', 'Skincare, makeup & scents that work for melanin-rich skin.', 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1200&q=80&auto=format&fit=crop'], ['fashion', 'Fashion edit', 'Fresh fits for work, weekends and every owambe.', 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80&auto=format&fit=crop']] as $i => [$department, $heading, $text, $image])
-            <a href="{{ route('shop', ['department' => $department]) }}" data-reveal="{{ $i * 120 }}" class="group relative flex min-h-80 items-end overflow-hidden rounded-[2rem] p-8 sm:min-h-96 sm:p-10">
+            <a href="{{ route('shop', ['department' => $department]) }}" wire:navigate data-reveal="{{ $i * 120 }}" class="group relative flex min-h-80 items-end overflow-hidden rounded-[2rem] p-8 sm:min-h-96 sm:p-10">
                 <img src="{{ $image }}" alt="" loading="lazy" class="absolute inset-0 size-full object-cover transition duration-1000 group-hover:scale-105">
                 <div class="absolute inset-0 {{ $i === 0 ? 'bg-gradient-to-t from-brand-950/90 to-brand-950/10' : 'bg-gradient-to-t from-zinc-950/90 to-zinc-950/10' }}"></div>
                 <div class="relative">
@@ -243,7 +340,7 @@ new #[Layout('layouts::shop')] class extends Component {
                     <p class="text-sm font-bold tracking-widest text-amber-600 uppercase dark:text-amber-400">Customer favourites</p>
                     <h2 id="best-heading" class="mt-1 text-3xl font-extrabold tracking-tight text-brand-950 sm:text-4xl dark:text-white">Best sellers</h2>
                 </div>
-                <a href="{{ route('shop', ['sort' => 'popular']) }}" class="hidden shrink-0 font-semibold text-brand-700 hover:underline sm:block dark:text-brand-400">See more →</a>
+                <a href="{{ route('shop', ['sort' => 'popular']) }}" wire:navigate class="hidden shrink-0 font-semibold text-brand-700 hover:underline sm:block dark:text-brand-400">See more →</a>
             </div>
             <div class="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
                 @foreach ($this->bestSellers as $i => $product)
@@ -274,7 +371,7 @@ new #[Layout('layouts::shop')] class extends Component {
                                 <div class="min-w-0">
                                     <p class="font-semibold">{{ $review->name }} @if ($review->location)<span class="font-normal text-zinc-500">· {{ $review->location }}</span>@endif</p>
                                     @if ($review->product)
-                                        <a href="{{ route('product', $review->product) }}" class="block truncate text-xs text-brand-700 hover:underline dark:text-brand-400">{{ $review->product->name }}</a>
+                                        <a href="{{ route('product', $review->product) }}" wire:navigate class="block truncate text-xs text-brand-700 hover:underline dark:text-brand-400">{{ $review->product->name }}</a>
                                     @endif
                                 </div>
                             </figcaption>

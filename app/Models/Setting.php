@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Support\Media;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -41,6 +43,8 @@ class Setting extends Model
         'bank_account_name' => 'Kimdern Store',
         'bank_account_number' => '0000000000',
         'low_stock_threshold' => '5',
+        'flash_sale_title' => 'Flash sale',
+        'flash_sale_ends_at' => null,
         'meta_description' => 'Shop skincare, makeup, hair care, fragrance and fashion at Kimdern Store. Genuine products, fast delivery across Nigeria, pay with card or bank transfer.',
     ];
 
@@ -71,6 +75,26 @@ class Setting extends Model
         }
 
         Cache::forget(self::CACHE_KEY);
+    }
+
+    /**
+     * When the flash sale ends, if one is running now.
+     */
+    public static function flashSaleEndsAt(): ?CarbonInterface
+    {
+        $value = static::get('flash_sale_ends_at');
+
+        if (blank($value)) {
+            return null;
+        }
+
+        try {
+            $endsAt = Date::parse($value);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return $endsAt->isFuture() ? $endsAt : null;
     }
 
     public static function logoUrl(): ?string

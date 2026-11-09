@@ -26,12 +26,15 @@ class ShopSeeder extends Seeder
         $categories = collect([
             ['Skincare', 'beauty', 'Cleansers, serums, moisturisers and sun care for glowing skin.', '1598440947619-2c35fc9aa908'],
             ['Makeup', 'beauty', 'Foundation, lipsticks, palettes and everything for a flawless finish.', '1522335789203-aabd1fc54bc9'],
-            ['Hair Care', 'beauty', 'Shampoos, treatments and tools for every hair type.', '1527799820374-dcf8d9d4a388'],
             ['Fragrance', 'beauty', 'Signature scents for him and her.', '1592945403244-b3fbafd7f539'],
             ['Women', 'fashion', 'Dresses, tops and everyday pieces you will love.', '1595777457583-95e059d581b8'],
             ['Men', 'fashion', 'Shirts, tees, jackets and smart looks.', '1617137968427-85924c800a22'],
             ['Shoes', 'fashion', 'Sneakers, heels and shoes for every day.', '1549298916-b41d501d3772'],
             ['Bags & Accessories', 'fashion', 'Handbags, watches and sunglasses to finish the look.', '1584917865442-de89df76afd3'],
+            ['Wigs', 'hair', 'Human hair and synthetic wigs: bone straight, body wave, curly and bobs.', '1523824921871-d6f1a15151f1'],
+            ['Extensions & Braids', 'hair', 'Braiding hair, ponytails and bulk hair for protective styles.', '1626954079979-ec4f7b05e032'],
+            ['Hair Care', 'hair', 'Shampoos, masks and oils for natural, relaxed and treated hair.', '1535585209827-a15fcdbc4c2d'],
+            ['Hair Tools', 'hair', 'Dryers, curlers, brushes and combs for salon results at home.', '1560869713-7d0a29430803'],
         ])->mapWithKeys(fn (array $c, int $i) => [$c[0] => Category::query()->updateOrCreate(['slug' => Str::slug($c[0])], [
             'name' => $c[0],
             'department' => $c[1],
@@ -59,7 +62,7 @@ class ShopSeeder extends Seeder
             ['Makeup', 'Gel Nail Polish Trio', 'Kimdern Beauty', 7500, null, ['1599948128020-9a44505b0d1b'], false, null, 'Three bright shades with a glossy gel finish and no lamp needed.'],
             ['Hair Care', 'Repair Hair Mask', 'Curl Theory', 9800, null, ['1608248543803-ba4f8c70ae0b'], false, null, 'Deep conditioning mask for dry, damaged and relaxed hair.'],
             ['Hair Care', 'Moisture Shampoo & Conditioner', 'Curl Theory', 14000, 16500, ['1535585209827-a15fcdbc4c2d'], true, null, 'Sulphate-free duo that cleans without stripping natural oils.'],
-            ['Hair Care', 'Salon Brush & Comb Kit', 'Curl Theory', 8500, null, ['1527799820374-dcf8d9d4a388'], false, null, 'Paddle brush, detangling comb and rat-tail comb for everyday styling.'],
+            ['Hair Tools', 'Salon Brush & Comb Kit', 'Curl Theory', 8500, null, ['1527799820374-dcf8d9d4a388'], false, null, 'Paddle brush, detangling comb and rat-tail comb for everyday styling.'],
             ['Hair Care', 'Growth Oil for Natural Hair', 'Curl Theory', 7200, null, ['1617897903246-719242758050'], false, null, 'Rosemary and castor oil blend that feeds the scalp and edges.'],
             ['Fragrance', 'Rose Noir Eau de Parfum', 'Maison Kimdern', 38000, 45000, ['1592945403244-b3fbafd7f539', '1594035910387-fea47794261f'], true, ['sizes' => ['50ml' => 38000, '100ml' => 62000]], 'Velvety rose and oud with a warm vanilla base.'],
             ['Fragrance', 'Amber Gold Perfume', 'Maison Kimdern', 35000, null, ['1588405748880-12d1d2a59f75'], false, ['sizes' => ['50ml' => 35000, '100ml' => 58000]], 'A sweet, glowing amber scent that lasts from morning to night.'],
@@ -83,6 +86,17 @@ class ShopSeeder extends Seeder
             ['Bags & Accessories', 'Mini Chain Clutch', 'Kimdern Atelier', 19500, null, ['1566150905458-1bf1fc113f0d'], false, null, 'A slim pastel clutch with a gold chain strap.'],
             ['Bags & Accessories', 'Steel Chronograph Watch', 'Kimdern Atelier', 65000, 75000, ['1523170335258-f5ed11844a49'], false, null, 'Water-resistant stainless steel watch with a deep blue dial.'],
             ['Bags & Accessories', 'Round Metal Sunglasses', 'Kimdern Atelier', 12500, null, ['1511499767150-a48a237f0083'], false, null, 'UV400 lenses in a light gold metal frame.'],
+            // Hair department
+            ['Wigs', 'Bone Straight Human Hair Wig', 'Kimdern Hair', 120000, 140000, ['1523824921871-d6f1a15151f1', '1503104834685-7205e8607eb9'], true, ['sizes' => ['12 inches' => 120000, '16 inches' => 165000, '20 inches' => 210000], 'colours' => ['Natural Black' => '#1b1b1b']], '100% human hair, silky bone straight with a pre-plucked HD lace closure. Wear it straight out of the box.'],
+            ['Wigs', 'Body Wave Lace Frontal Wig', 'Kimdern Hair', 135000, null, ['1605980625600-88b46abafa8d', '1492106087820-71f1a00d2b11'], true, ['sizes' => ['14 inches' => 135000, '18 inches' => 180000, '22 inches' => 230000], 'colours' => ['Natural Black' => '#1b1b1b', 'Ash Brown' => '#8d7b6f']], '13x4 lace frontal with soft, bouncy body waves that hold their pattern after washing.'],
+            ['Wigs', 'Kinky Curly Afro Wig', 'Kimdern Hair', 85000, 98000, ['1519699047748-de8e457a634e', '1589156280159-27698a70f29e'], false, ['sizes' => ['10 inches' => 85000, '14 inches' => 110000]], 'Full, natural-looking kinky curls that blend with 4C hair. Light and breathable cap.'],
+            ['Wigs', 'Ginger Bob Wig with Fringe', 'Kimdern Hair', 75000, null, ['1616683693504-3ea7e9ad6fec'], false, ['sizes' => ['10 inches' => 75000, '12 inches' => 90000], 'colours' => ['Ginger' => '#b5532a', 'Natural Black' => '#1b1b1b']], 'A chic blunt bob with full bangs. Glueless, so you can put it on in minutes.'],
+            ['Wigs', 'Short Pixie Curl Wig', 'Kimdern Hair', 55000, null, ['1611432579699-484f7990b127'], false, null, 'Soft short curls for an easy everyday look. Adjustable straps for a secure fit.'],
+            ['Extensions & Braids', 'Sleek Ponytail Extension', 'Kimdern Hair', 22000, 26000, ['1527203561188-dae1bc1a417f'], true, ['colours' => ['Natural Black' => '#1b1b1b', 'Dark Brown' => '#3b2416']], 'A long, sleek drawstring ponytail for a snatched look in five minutes.'],
+            ['Extensions & Braids', 'Pre-Stretched Braiding Hair (6 Packs)', 'Kimdern Hair', 9500, null, ['1626954079979-ec4f7b05e032'], false, ['colours' => ['1B Black' => '#1b1b1b', '30 Auburn' => '#7a3b1d', '613 Blonde' => '#e9d39a']], 'Itch-free, pre-stretched braiding hair. Six packs is enough for a full head of knotless braids.'],
+            ['Extensions & Braids', 'Afro Kinky Bulk Hair', 'Kimdern Hair', 12500, null, ['1589156280159-27698a70f29e'], false, null, 'Soft kinky bulk hair for faux locs, twists and crochet styles.'],
+            ['Hair Tools', 'Ceramic Curling Iron', 'Kimdern Hair', 18500, 22000, ['1560869713-7d0a29430803'], false, null, 'Ceramic barrel with five heat settings for loose waves or tight curls.'],
+            ['Hair Tools', 'Ionic Hair Dryer', 'Kimdern Hair', 24000, null, ['1580618672591-eb180b1a973f'], false, null, '2000W dryer with a concentrator nozzle and cool shot for smooth, frizz-free blowouts.'],
         ];
 
         foreach ($products as $i => [$categoryName, $name, $brand, $price, $compare, $photos, $featured, $variants, $short]) {
@@ -194,6 +208,7 @@ class ShopSeeder extends Seeder
     {
         $banners = [
             ['New season', 'Glow up your everyday routine', 'Skincare and makeup loved by thousands of Nigerian women, delivered to your door.', '1612817288484-6f916006741a', 'Shop beauty', '/category/skincare'],
+            ['Hair goals', 'Wigs & hair for every mood', 'Bone straight, body wave, curly and bobs. 100% human hair options, delivered discreetly.', '1523824921871-d6f1a15151f1', 'Shop hair', '/shop?department=hair'],
             ['Fresh drops', 'Style that turns heads', 'Dresses, sneakers and bags picked for Lagos weekends and owambe Saturdays.', '1483985988355-763728e1935b', 'Shop fashion', '/shop?department=fashion'],
             ['Signature scents', 'Find your new favourite perfume', 'Long-lasting fragrances for him and her, from ₦35,000.', '1594035910387-fea47794261f', 'Shop fragrance', '/category/fragrance'],
         ];

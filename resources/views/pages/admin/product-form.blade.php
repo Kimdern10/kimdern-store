@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\SendStockAlerts;
 use App\Livewire\Concerns\AdminOnly;
 use App\Models\Category;
 use App\Models\Product;
@@ -211,7 +212,8 @@ new #[Layout('layouts::admin'), Title('Product')] class extends Component {
         });
 
         $this->photos = [];
-        Flux::toast(variant: 'success', text: 'Product saved.');
+        $emailed = app(SendStockAlerts::class)->handle($this->product);
+        Flux::toast(variant: 'success', text: 'Product saved.'.($emailed ? " {$emailed} waiting ".Str::plural('shopper', $emailed).' emailed that it is back in stock.' : ''));
         $this->redirectRoute('admin.products.edit', $this->product->id);
     }
 }; ?>

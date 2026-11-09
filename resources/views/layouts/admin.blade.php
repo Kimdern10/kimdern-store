@@ -2,6 +2,8 @@
 @php
     $pendingReviews = \App\Models\Review::query()->where('is_approved', false)->count();
     $openOrders = \App\Models\Order::query()->whereIn('status', ['pending', 'paid', 'processing'])->count();
+    $unreadMessages = \App\Models\ContactMessage::query()->whereNull('read_at')->count();
+    $waitingAlerts = \App\Models\StockAlert::query()->whereNull('notified_at')->count();
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -29,8 +31,10 @@
                     <flux:sidebar.item icon="cube" :href="route('admin.products')" :current="request()->routeIs('admin.products*')">Products</flux:sidebar.item>
                     <flux:sidebar.item icon="squares-2x2" :href="route('admin.categories')" :current="request()->routeIs('admin.categories')">Categories</flux:sidebar.item>
                     <flux:sidebar.item icon="star" :href="route('admin.reviews')" :current="request()->routeIs('admin.reviews')" :badge="$pendingReviews ?: null">Reviews</flux:sidebar.item>
+                    <flux:sidebar.item icon="bell-alert" :href="route('admin.stock-alerts')" :current="request()->routeIs('admin.stock-alerts')" :badge="$waitingAlerts ?: null">Back in stock</flux:sidebar.item>
                 </flux:sidebar.group>
                 <flux:sidebar.group heading="Sales" class="grid">
+                    <flux:sidebar.item icon="inbox" :href="route('admin.messages')" :current="request()->routeIs('admin.messages')" :badge="$unreadMessages ?: null">Messages</flux:sidebar.item>
                     <flux:sidebar.item icon="users" :href="route('admin.customers')" :current="request()->routeIs('admin.customers')">Customers</flux:sidebar.item>
                     <flux:sidebar.item icon="ticket" :href="route('admin.coupons')" :current="request()->routeIs('admin.coupons')">Coupons</flux:sidebar.item>
                     <flux:sidebar.item icon="truck" :href="route('admin.zones')" :current="request()->routeIs('admin.zones')">Delivery zones</flux:sidebar.item>

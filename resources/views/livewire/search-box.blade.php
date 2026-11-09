@@ -54,7 +54,7 @@ new class extends Component {
                         <ul class="max-h-[60vh] divide-y overflow-y-auto">
                             @foreach ($this->results as $product)
                                 <li wire:key="search-{{ $product->id }}">
-                                    <a href="{{ route('product', $product) }}" class="flex items-center gap-4 px-5 py-3 transition hover:bg-brand-50 dark:hover:bg-brand-950/40">
+                                    <a href="{{ route('product', $product) }}" wire:navigate class="flex items-center gap-4 px-5 py-3 transition hover:bg-brand-50 dark:hover:bg-brand-950/40">
                                         <img src="{{ $product->imageUrl() }}" alt="" class="size-14 rounded-xl object-cover">
                                         <div class="min-w-0 flex-1">
                                             <p class="truncate font-semibold">{{ $product->name }}</p>
@@ -65,7 +65,7 @@ new class extends Component {
                                 </li>
                             @endforeach
                         </ul>
-                        <a href="{{ route('shop', ['q' => $query]) }}" class="block border-t px-5 py-4 text-center text-sm font-semibold text-brand-700 hover:bg-zinc-50 dark:text-brand-400 dark:hover:bg-zinc-800">See all results for “{{ $query }}” →</a>
+                        <a href="{{ route('shop', ['q' => $query]) }}" wire:navigate class="block border-t px-5 py-4 text-center text-sm font-semibold text-brand-700 hover:bg-zinc-50 dark:text-brand-400 dark:hover:bg-zinc-800">See all results for “{{ $query }}” →</a>
                     @endif
                 @else
                     <div class="flex flex-wrap gap-2 p-5">

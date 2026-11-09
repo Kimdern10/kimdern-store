@@ -67,6 +67,10 @@ new #[Layout('layouts::shop')] class extends Component {
 <div class="container-shop pt-10">
     <h1 class="text-3xl font-extrabold tracking-tight text-brand-950 sm:text-4xl dark:text-white">Your cart</h1>
 
+    @if ($missed = session('buy_again_missed'))
+        <flux:callout class="mt-6" variant="warning" icon="exclamation-triangle" heading="Some items could not be added" :text="'Not available right now: '.implode(', ', $missed).'.'" />
+    @endif
+
     @if ($this->cart->isEmpty())
         <div class="mt-10 rounded-[2rem] border border-dashed p-12 text-center">
             <div class="mx-auto grid size-20 place-items-center rounded-full bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-400"><flux:icon.shopping-bag class="size-9" /></div>
@@ -79,11 +83,11 @@ new #[Layout('layouts::shop')] class extends Component {
             <ul class="divide-y rounded-3xl border">
                 @foreach ($this->cart->lines() as $line)
                     <li wire:key="line-{{ $line->key }}" class="flex gap-4 p-4 sm:gap-6 sm:p-6">
-                        <a href="{{ route('product', $line->product) }}" class="shrink-0"><img src="{{ $line->product->imageUrl() }}" alt="{{ $line->product->name }}" class="size-24 rounded-2xl object-cover sm:size-28"></a>
+                        <a href="{{ route('product', $line->product) }}" wire:navigate class="shrink-0"><img src="{{ $line->product->imageUrl() }}" alt="{{ $line->product->name }}" class="size-24 rounded-2xl object-cover sm:size-28"></a>
                         <div class="flex min-w-0 flex-1 flex-col gap-1">
                             <div class="flex justify-between gap-4">
                                 <div class="min-w-0">
-                                    <a href="{{ route('product', $line->product) }}" class="font-bold hover:text-brand-700 dark:hover:text-brand-400">{{ $line->product->name }}</a>
+                                    <a href="{{ route('product', $line->product) }}" wire:navigate class="font-bold hover:text-brand-700 dark:hover:text-brand-400">{{ $line->product->name }}</a>
                                     @if ($line->variantLabel())<p class="text-sm text-zinc-500">{{ $line->variantLabel() }}</p>@endif
                                     <p class="text-sm text-zinc-500">{{ naira($line->unitPrice()) }} each</p>
                                 </div>
@@ -128,7 +132,7 @@ new #[Layout('layouts::shop')] class extends Component {
                 <div class="flex justify-between border-t pt-4 text-lg font-extrabold"><span>Total</span><span>{{ naira($this->cart->subtotal() - $this->cart->discount()) }}</span></div>
 
                 <flux:button variant="primary" href="{{ route('checkout') }}" class="w-full" icon-trailing="lock-closed">Go to checkout</flux:button>
-                <a href="{{ route('shop') }}" class="block text-center text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400">← Continue shopping</a>
+                <a href="{{ route('shop') }}" wire:navigate class="block text-center text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400">← Continue shopping</a>
             </aside>
         </div>
     @endif

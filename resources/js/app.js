@@ -30,6 +30,16 @@ function revealOnScroll() {
         }
         observer.observe(el);
     });
+
+    // Safety net: whatever is already on screen shows even if the observer is slow to report.
+    setTimeout(() => {
+        items.forEach((el) => {
+            if (!el.classList.contains('is-visible') && el.getBoundingClientRect().top < window.innerHeight) {
+                el.classList.add('is-visible');
+                observer.unobserve(el);
+            }
+        });
+    }, 600);
 }
 
 function countUp() {
@@ -53,12 +63,17 @@ function countUp() {
     });
 }
 
+let scrollListening = false;
+
 function stickyHeader() {
-    const header = document.querySelector('[data-header]');
-    if (!header) return;
-    const update = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    // The header is replaced on every wire:navigate page change, so look it up each time.
+    const update = () => document.querySelector('[data-header]')?.classList.toggle('is-scrolled', window.scrollY > 8);
     update();
-    window.addEventListener('scroll', update, { passive: true });
+
+    if (!scrollListening) {
+        window.addEventListener('scroll', update, { passive: true });
+        scrollListening = true;
+    }
 }
 
 function boot() {
@@ -71,6 +86,13 @@ function boot() {
 document.addEventListener('DOMContentLoaded', boot);
 document.addEventListener('livewire:navigated', boot);
 document.addEventListener('livewire:init', () => {
+    // Livewire rewrites class lists when it updates a component: keep things that were already shown visible.
+    window.Livewire.hook('morph.updating', ({ el, toEl }) => {
+        if (el.classList?.contains('is-visible') && toEl.classList) {
+            toEl.classList.add('is-visible');
+        }
+    });
+
     // New product cards arrive when filters change: reveal them too.
     window.Livewire.hook('morph.updated', () => requestAnimationFrame(revealOnScroll));
 });

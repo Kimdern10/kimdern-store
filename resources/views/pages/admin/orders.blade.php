@@ -47,7 +47,10 @@ new #[Layout('layouts::admin'), Title('Orders')] class extends Component {
 }; ?>
 
 <div class="space-y-6">
-    <flux:heading size="xl">Orders</flux:heading>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <flux:heading size="xl">Orders</flux:heading>
+        <flux:button icon="arrow-down-tray" :href="route('admin.orders.export', array_filter(['status' => $status, 'search' => $search]))">Export to Excel (CSV)</flux:button>
+    </div>
 
     <div class="no-scrollbar flex gap-2 overflow-x-auto">
         <button type="button" wire:click="$set('status', '')" @class(['shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition', 'bg-brand-700 text-white' => $status === '', 'bg-white ring-1 ring-zinc-200 hover:bg-zinc-100 dark:bg-zinc-900 dark:ring-zinc-800' => $status !== ''])>All <span class="opacity-70">{{ array_sum($this->counts) }}</span></button>

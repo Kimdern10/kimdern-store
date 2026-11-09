@@ -167,7 +167,7 @@ new #[Layout('layouts::shop')] class extends Component {
     @guest
         <div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-brand-50 px-5 py-4 text-sm dark:bg-brand-950/60">
             <p>Checking out as a guest. Have an account? Log in to save your address and track orders easily.</p>
-            <a href="{{ route('login') }}" class="font-bold text-brand-700 hover:underline dark:text-brand-400">Log in →</a>
+            <a href="{{ route('login') }}" wire:navigate class="font-bold text-brand-700 hover:underline dark:text-brand-400">Log in →</a>
         </div>
     @endguest
 
@@ -180,7 +180,7 @@ new #[Layout('layouts::shop')] class extends Component {
             <section class="rounded-3xl border p-6" aria-labelledby="contact-title">
                 <h2 id="contact-title" class="flex items-center gap-3 text-lg font-bold"><span class="grid size-8 place-items-center rounded-full bg-brand-700 text-sm text-white">1</span> Contact details</h2>
                 <div class="mt-5 grid gap-4 sm:grid-cols-2">
-                    <flux:input wire:model="email" type="email" label="Email" autocomplete="email" required class="sm:col-span-2" description="We'll send your receipt and updates here." />
+                    <div class="sm:col-span-2"><flux:input wire:model="email" type="email" label="Email" autocomplete="email" required description="We'll send your receipt and updates here." /></div>
                     <flux:input wire:model="name" label="Full name" autocomplete="name" required />
                     <flux:input wire:model="phone" type="tel" label="Phone number" autocomplete="tel" placeholder="0803 123 4567" required />
                 </div>
@@ -206,7 +206,7 @@ new #[Layout('layouts::shop')] class extends Component {
                 @endauth
 
                 <div class="mt-5 grid gap-4 sm:grid-cols-2">
-                    <flux:input wire:model="address" wire:change="$set('addressId', null)" label="Street address" autocomplete="street-address" placeholder="House number and street" required class="sm:col-span-2" />
+                    <div class="sm:col-span-2"><flux:input wire:model="address" wire:change="$set('addressId', null)" label="Street address" autocomplete="street-address" placeholder="House number and street" required /></div>
                     <flux:input wire:model="city" wire:change="$set('addressId', null)" label="City / area" autocomplete="address-level2" placeholder="e.g. Ikeja" required />
                     <flux:select wire:model.live="state" label="State" required>
                         <flux:select.option value="">Choose your state</flux:select.option>
@@ -214,10 +214,10 @@ new #[Layout('layouts::shop')] class extends Component {
                             <flux:select.option value="{{ $option }}">{{ $option }}</flux:select.option>
                         @endforeach
                     </flux:select>
-                    <flux:textarea wire:model="notes" label="Delivery note (optional)" rows="2" placeholder="Landmark, best time to call..." class="sm:col-span-2" />
+                    <div class="sm:col-span-2"><flux:textarea wire:model="notes" label="Delivery note (optional)" rows="2" placeholder="Landmark, best time to call..." /></div>
                     @auth
                         @if (! $addressId)
-                            <flux:checkbox wire:model="saveAddress" label="Save this address for next time" class="sm:col-span-2" />
+                            <div class="sm:col-span-2"><flux:checkbox wire:model="saveAddress" label="Save this address for next time" /></div>
                         @endif
                     @endauth
                 </div>
@@ -301,7 +301,7 @@ new #[Layout('layouts::shop')] class extends Component {
                 <span wire:loading.remove wire:target="placeOrder" class="flex items-center gap-2"><flux:icon.lock-closed variant="micro" /> {{ $this->paysOnline ? 'Pay '.naira($this->totals['total']) : 'Place order' }}</span>
                 <span wire:loading wire:target="placeOrder" class="flex items-center gap-2"><span class="size-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span> Please wait...</span>
             </button>
-            <p class="text-center text-xs text-zinc-500">By placing your order you agree to our <a href="{{ route('shipping') }}" class="underline">delivery & returns policy</a>.</p>
+            <p class="text-center text-xs text-zinc-500">By placing your order you agree to our <a href="{{ route('shipping') }}" wire:navigate class="underline">delivery & returns policy</a>.</p>
         </aside>
     </form>
 </div>

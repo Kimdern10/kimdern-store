@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderExportController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Http\RedirectResponse;
@@ -20,16 +21,16 @@ Route::livewire('checkout', 'pages::shop.checkout')->name('checkout');
 Route::get('checkout/callback', [PaymentController::class, 'callback'])->name('checkout.callback');
 Route::post('paystack/webhook', [PaymentController::class, 'webhook'])->name('paystack.webhook');
 
-Route::get('track-order', [OrderController::class, 'track'])->name('orders.track');
+Route::livewire('track-order', 'pages::shop.track-order')->name('orders.track');
 Route::middleware('signed')->group(function () {
-    Route::get('orders/{order:number}', [OrderController::class, 'show'])->name('orders.show');
+    Route::livewire('orders/{order:number}', 'pages::shop.order')->name('orders.show');
     Route::get('orders/{order:number}/receipt', [OrderController::class, 'receipt'])->name('orders.receipt');
     Route::get('orders/{order:number}/pay', [OrderController::class, 'pay'])->name('orders.pay');
 });
 
-Route::view('contact', 'shop.page', ['eyebrow' => 'We are here to help', 'heading' => 'Contact us', 'intro' => 'Questions about a product, an order or a delivery? Reach us any way you like.', 'content' => 'shop.pages.contact'])->name('contact');
-Route::view('delivery-and-returns', 'shop.page', ['eyebrow' => 'Good to know', 'heading' => 'Delivery & returns', 'content' => 'shop.pages.shipping'])->name('shipping');
-Route::view('privacy-policy', 'shop.page', ['eyebrow' => 'Your data', 'heading' => 'Privacy & cookies', 'content' => 'shop.pages.privacy'])->name('privacy');
+Route::livewire('contact', 'pages::shop.contact')->name('contact');
+Route::livewire('delivery-and-returns', 'pages::shop.delivery')->name('shipping');
+Route::livewire('privacy-policy', 'pages::shop.privacy')->name('privacy');
 
 Route::get('sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
 Route::get('robots.txt', [SitemapController::class, 'robots'])->name('robots');
@@ -54,6 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::livewire('/', 'pages::admin.dashboard')->name('dashboard');
     Route::livewire('orders', 'pages::admin.orders')->name('orders');
+    Route::get('orders-export', OrderExportController::class)->name('orders.export');
     Route::livewire('orders/{order:number}', 'pages::admin.order')->name('orders.show');
     Route::livewire('products', 'pages::admin.products')->name('products');
     Route::livewire('products/create', 'pages::admin.product-form')->name('products.create');
@@ -63,6 +65,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::livewire('delivery-zones', 'pages::admin.zones')->name('zones');
     Route::livewire('customers', 'pages::admin.customers')->name('customers');
     Route::livewire('reviews', 'pages::admin.reviews')->name('reviews');
+    Route::livewire('messages', 'pages::admin.messages')->name('messages');
+    Route::livewire('stock-alerts', 'pages::admin.stock-alerts')->name('stock-alerts');
     Route::livewire('banners', 'pages::admin.banners')->name('banners');
     Route::livewire('settings', 'pages::admin.settings')->name('settings');
 });
