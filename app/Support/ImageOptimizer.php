@@ -53,10 +53,31 @@ class ImageOptimizer
     }
 
     /**
+     * A 12-megapixel phone photo needs about 50 MB once opened, more than the usual 128 MB limit
+     * allows alongside the resized copies. Raise the limit for this request if the host lets us.
+     */
+    private function allowEnoughMemory(): void
+    {
+        $limit = ini_get('memory_limit');
+        $bytes = $limit === '-1' ? PHP_INT_MAX : (int) $limit * match (strtoupper(substr(trim($limit), -1))) {
+            'G' => 1024 ** 3,
+            'M' => 1024 ** 2,
+            'K' => 1024,
+            default => 1,
+        };
+
+        if ($bytes < 384 * 1024 ** 2) {
+            @ini_set('memory_limit', '384M');
+        }
+    }
+
+    /**
      * Read the upload into a GD image, turning phone photos the right way up.
      */
     private function load(UploadedFile $file): GdImage
     {
+        $this->allowEnoughMemory();
+
         $contents = (string) file_get_contents($file->getRealPath());
         $image = @imagecreatefromstring($contents);
 

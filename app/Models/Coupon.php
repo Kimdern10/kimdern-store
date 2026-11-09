@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Database\Factories\CouponFactory;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -41,6 +41,11 @@ class Coupon extends Model
         ];
     }
 
+    /**
+     * Codes are stored in capitals so customers can type them any way.
+     *
+     * @return Attribute<string, string>
+     */
     protected function code(): Attribute
     {
         return Attribute::make(set: fn (string $value) => strtoupper(trim($value)));

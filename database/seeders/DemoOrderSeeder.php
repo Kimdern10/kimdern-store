@@ -39,7 +39,7 @@ class DemoOrderSeeder extends Seeder
 
             foreach ($lines as $product) {
                 $variant = $product->variants->first();
-                $price = $variant?->price ?? $product->price;
+                $price = $variant->price ?? $product->price;
                 $qty = 1 + ($i % 2);
                 $subtotal += $price * $qty;
                 $items[] = [

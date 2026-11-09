@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $body
  * @property bool $is_verified_buyer
  * @property bool $is_approved
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
  * @property-read Product $product
  */
 #[Fillable(['product_id', 'user_id', 'name', 'location', 'rating', 'title', 'body', 'is_verified_buyer', 'is_approved'])]
@@ -35,7 +36,7 @@ class Review extends Model
 
     protected static function booted(): void
     {
-        $refresh = fn (Review $review) => $review->product?->refreshRating();
+        $refresh = fn (Review $review) => Product::query()->find($review->product_id)?->refreshRating();
 
         static::saved($refresh);
         static::deleted($refresh);

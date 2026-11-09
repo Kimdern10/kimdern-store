@@ -100,7 +100,7 @@ class ShopSeeder extends Seeder
                 'is_featured' => $featured,
             ]);
 
-            $product->forceFill(['sales_count' => (37 * ($i + 3)) % 90, 'created_at' => now()->subDays(($i * 7) % 60)])->saveQuietly();
+            $product->forceFill(['sales_count' => (37 * ($i + 3)) % 90, 'created_at' => now()->subDays(($i * 11) % 120)])->saveQuietly();
 
             $product->images()->delete();
             foreach ($photos as $order => $photo) {

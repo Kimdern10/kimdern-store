@@ -79,9 +79,9 @@ new #[Layout('layouts::shop')] class extends Component {
                 @foreach ($this->banners as $i => $banner)
                     <div
                         x-show="active === {{ $i }}"
-                        x-transition:enter="transition duration-1000 ease-out"
+                        x-transition:enter="transition delay-300 duration-700 ease-out"
                         x-transition:enter-start="opacity-0"
-                        x-transition:leave="transition duration-700 ease-in absolute inset-0"
+                        x-transition:leave="transition duration-300 ease-in absolute inset-0"
                         x-transition:leave-end="opacity-0"
                         @if ($i > 0) x-cloak @endif
                         class="absolute inset-0"

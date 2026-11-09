@@ -19,7 +19,7 @@ final readonly class CartLine
 
     public function unitPrice(): int
     {
-        return $this->variant?->price ?? $this->product->price;
+        return $this->variant->price ?? $this->product->price;
     }
 
     public function total(): int

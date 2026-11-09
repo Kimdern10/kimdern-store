@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Support\Cart;
 use App\Support\CartLine;
 use App\Support\Mailer;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -48,7 +49,7 @@ class PlaceOrder
         $coupon = $this->cart->coupon();
 
         $order = DB::transaction(function () use ($lines, $details, $paymentMethod, $user, $totals, $coupon): Order {
-            $this->reserveStock($lines->all());
+            $this->reserveStock($lines);
 
             $order = Order::query()->create([
                 'number' => Order::newNumber(),
@@ -104,9 +105,9 @@ class PlaceOrder
     }
 
     /**
-     * @param  list<CartLine>  $lines
+     * @param  Collection<int, CartLine>  $lines
      */
-    private function reserveStock(array $lines): void
+    private function reserveStock(Collection $lines): void
     {
         foreach ($lines as $line) {
             $row = $line->variant

@@ -1,6 +1,14 @@
 <div
-    x-data="{ show: false }"
-    x-init="try { show = localStorage.getItem('kds.cookies') !== 'ok' } catch (e) { show = true }"
+    x-data="{
+        show: false,
+        init() {
+            try { this.show = localStorage.getItem('kds.cookies') !== 'ok' } catch (e) { this.show = true }
+        },
+        accept() {
+            this.show = false
+            try { localStorage.setItem('kds.cookies', 'ok') } catch (e) {}
+        },
+    }"
     x-cloak
     x-show="show"
     x-transition:enter="transition duration-500 ease-out"
@@ -20,6 +28,6 @@
                 <a href="{{ route('privacy') }}" class="font-semibold text-brand-700 underline underline-offset-2 dark:text-brand-400">Learn more</a>
             </p>
         </div>
-        <flux:button size="sm" variant="primary" class="shrink-0" x-on:click="show = false; try { localStorage.setItem('kds.cookies', 'ok') } catch (e) {}">Okay</flux:button>
+        <flux:button size="sm" variant="primary" class="shrink-0" x-on:click="accept()">Okay</flux:button>
     </div>
 </div>

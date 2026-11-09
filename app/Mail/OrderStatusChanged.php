@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Support\Receipt;
 use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Attachment;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -43,7 +44,7 @@ class OrderStatusChanged extends Mailable
     /**
      * The receipt goes with the "payment received" email.
      *
-     * @return array<int, \Illuminate\Mail\Attachment>
+     * @return array<int, Attachment>
      */
     public function attachments(): array
     {
