@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Concerns\ReportsBankTransfer;
 use App\Models\Order;
 use App\Support\Cart;
 use Flux\Flux;
@@ -10,6 +11,8 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 new #[Title('Order details')] class extends Component {
+    use ReportsBankTransfer;
+
     public Order $order;
 
     public function mount(Order $order): void
@@ -18,6 +21,11 @@ new #[Title('Order details')] class extends Component {
 
         $this->order = $order->load(['items.product', 'history']);
         Seo::set('Order '.$order->number)->noindex = true;
+    }
+
+    public function refreshOrder(): void
+    {
+        $this->order->refresh()->load(['items.product', 'history']);
     }
 
     /**
@@ -60,7 +68,7 @@ new #[Title('Order details')] class extends Component {
     }
 }; ?>
 
-<div>
+<div @if ($order->status === \App\Enums\OrderStatus::Pending) wire:poll.20s="refreshOrder" @endif>
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
             <a href="{{ route('account.orders') }}" wire:navigate class="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400">← All orders</a>

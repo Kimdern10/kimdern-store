@@ -33,6 +33,8 @@ use Illuminate\Support\Str;
  * @property string|null $coupon_code
  * @property OrderStatus $status
  * @property string $payment_method paystack|bank_transfer
+ * @property string|null $payment_channel transfer|card (how a Paystack payment was made)
+ * @property Carbon|null $transfer_reported_at When the customer said they had sent a bank transfer
  * @property string|null $payment_reference
  * @property Carbon|null $paid_at
  * @property string|null $tracking_number
@@ -42,7 +44,7 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, OrderStatusHistory> $history
  * @property-read User|null $user
  */
-#[Fillable(['number', 'user_id', 'email', 'name', 'phone', 'address', 'city', 'state', 'delivery_zone_id', 'delivery_eta', 'subtotal', 'discount', 'delivery_fee', 'total', 'coupon_code', 'status', 'payment_method', 'payment_reference', 'paid_at', 'tracking_number', 'notes'])]
+#[Fillable(['number', 'user_id', 'email', 'name', 'phone', 'address', 'city', 'state', 'delivery_zone_id', 'delivery_eta', 'subtotal', 'discount', 'delivery_fee', 'total', 'coupon_code', 'status', 'payment_method', 'payment_channel', 'payment_reference', 'paid_at', 'transfer_reported_at', 'tracking_number', 'notes'])]
 class Order extends Model
 {
     /** @use HasFactory<OrderFactory> */
@@ -57,6 +59,7 @@ class Order extends Model
             'delivery_fee' => 'integer',
             'total' => 'integer',
             'paid_at' => 'datetime',
+            'transfer_reported_at' => 'datetime',
         ];
     }
 
@@ -126,7 +129,20 @@ class Order extends Model
 
     public function paymentMethodLabel(): string
     {
-        return $this->payment_method === 'paystack' ? 'Card / bank (Paystack)' : 'Bank transfer';
+        return match (true) {
+            $this->payment_method === 'paystack' && $this->payment_channel === 'transfer' => 'Bank transfer via Paystack',
+            $this->payment_method === 'paystack' && $this->payment_channel === 'card' => 'Card / USSD via Paystack',
+            $this->payment_method === 'paystack' => 'Paystack',
+            default => 'Bank transfer',
+        };
+    }
+
+    /**
+     * A bank-transfer order the customer says they have paid, waiting for the shop to see the money.
+     */
+    public function awaitingTransferCheck(): bool
+    {
+        return $this->status === OrderStatus::Pending && $this->payment_method === 'bank_transfer' && $this->transfer_reported_at !== null;
     }
 
     public function fullAddress(): string

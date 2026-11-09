@@ -163,10 +163,22 @@ describe('Paystack', function () {
             && $request['amount'] === 1250000
             && $request['email'] === 'ada@example.com'
             && $request['reference'] === $order->payment_reference
+            && $request['channels'] === ['bank_transfer']
             && $request->hasHeader('Authorization', 'Bearer sk_test_example'));
+        expect($order->payment_channel)->toBe('transfer');
 
         // Card orders are confirmed by email only once paid.
         Mail::assertNotSent(OrderPlaced::class);
+    });
+
+    it('sends card and USSD payers to Paystack with only those options', function () {
+        Http::fake(['api.paystack.co/transaction/initialize' => Http::response(['status' => true, 'data' => ['authorization_url' => 'https://checkout.paystack.com/xyz']])]);
+        app(Cart::class)->add(simpleProduct());
+
+        checkout()->set('payWith', 'card')->call('placeOrder')->assertRedirect('https://checkout.paystack.com/xyz');
+
+        Http::assertSent(fn ($request) => $request['channels'] === ['card', 'ussd', 'bank']);
+        expect(Order::query()->sole()->payment_channel)->toBe('card');
     });
 
     it('shows the order page when Paystack cannot be reached', function () {

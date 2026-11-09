@@ -51,10 +51,18 @@
     </section>
 
     {{-- Bank details while waiting for a transfer --}}
-    @if ($order->status === OrderStatus::Pending && $order->payment_method === 'bank_transfer')
+    @if ($order->awaitingTransferCheck())
+        <section class="flex items-start gap-4 rounded-3xl border-2 border-brand-300 bg-brand-50 p-6 dark:border-brand-800 dark:bg-brand-950/40" aria-live="polite">
+            <span class="relative mt-1 flex size-4 shrink-0"><span class="absolute inline-flex size-full animate-ping rounded-full bg-brand-400 opacity-75"></span><span class="relative inline-flex size-4 rounded-full bg-brand-600"></span></span>
+            <div>
+                <h2 class="text-lg font-bold">We're confirming your payment</h2>
+                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">You told us you sent {{ naira($order->total) }} at {{ $order->transfer_reported_at->format('g:i a') }}. As soon as we see it in our account, this page updates by itself and we email your receipt. There's nothing else you need to do.</p>
+            </div>
+        </section>
+    @elseif ($order->status === OrderStatus::Pending && $order->payment_method === 'bank_transfer')
         <section class="rounded-3xl border-2 border-amber-300 bg-amber-50 p-6 dark:border-amber-700 dark:bg-amber-950/30" aria-labelledby="pay-title">
             <h2 id="pay-title" class="text-lg font-bold">Complete your payment by bank transfer</h2>
-            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Send exactly <strong>{{ naira($order->total) }}</strong> and use <strong>{{ $order->number }}</strong> as the narration. We'll confirm by email as soon as it arrives.</p>
+            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Send exactly <strong>{{ naira($order->total) }}</strong> from any bank app (OPay, Moniepoint, Kuda, PalmPay or your bank) and use <strong>{{ $order->number }}</strong> as the narration. Then tap the button below.</p>
             <dl class="mt-4 grid gap-3 sm:grid-cols-3" x-data>
                 @foreach (['Bank' => $store['bank_name'], 'Account name' => $store['bank_account_name'], 'Account number' => $store['bank_account_number']] as $label => $value)
                     <div class="rounded-2xl bg-white p-4 dark:bg-zinc-900">
@@ -67,9 +75,11 @@
                     </div>
                 @endforeach
             </dl>
-            @if ($whatsapp = \App\Models\Setting::whatsappUrl('Hello, I have paid for order '.$order->number))
-                <a href="{{ $whatsapp }}" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400"><x-social-icon name="WhatsApp" /> Send your proof of payment on WhatsApp</a>
-            @endif
+            <button type="button" wire:click="reportTransfer" wire:loading.attr="disabled" class="mt-5 flex h-13 w-full items-center justify-center gap-2 rounded-full bg-brand-700 px-6 font-bold text-white shadow-lg shadow-brand-700/25 transition hover:-translate-y-0.5 hover:bg-brand-800 disabled:opacity-70 sm:w-auto">
+                <flux:icon.check-circle variant="micro" wire:loading.remove wire:target="reportTransfer" />
+                <span wire:loading wire:target="reportTransfer" class="size-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                I have sent the money
+            </button>
         </section>
     @endif
 

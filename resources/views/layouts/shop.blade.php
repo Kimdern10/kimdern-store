@@ -26,9 +26,9 @@
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="theme-color" content="#064e3b" />
 
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+        <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
         <link rel="manifest" href="/site.webmanifest" />
 
         {{ $head ?? '' }}
@@ -104,8 +104,9 @@
                 </div>
             </div>
 
-            {{-- Mobile menu --}}
-            <div x-cloak x-show="menu" class="fixed inset-0 z-50 lg:hidden" x-on:keydown.escape.window="menu = false">
+            {{-- Mobile menu. Moved to <body> because the header's blur effect would otherwise trap it inside the header bar. --}}
+            <template x-teleport="body">
+            <div x-cloak x-show="menu" x-effect="document.documentElement.classList.toggle('overflow-hidden', menu)" class="fixed inset-0 z-50 lg:hidden" x-on:keydown.escape.window="menu = false" role="dialog" aria-modal="true" aria-label="Menu">
                 <div x-show="menu" x-transition.opacity class="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm" x-on:click="menu = false"></div>
                 <nav x-show="menu" x-transition:enter="transition duration-300 ease-out" x-transition:enter-start="-translate-x-full" x-transition:leave="transition duration-200 ease-in" x-transition:leave-end="-translate-x-full" class="absolute inset-y-0 start-0 flex w-80 max-w-[85vw] flex-col overflow-y-auto bg-white p-5 shadow-2xl dark:bg-zinc-900" aria-label="Mobile">
                     <div class="mb-6 flex items-center justify-between">
@@ -129,9 +130,13 @@
                     <a href="{{ route('contact') }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Contact us</a>
                     @auth
                         <a href="{{ route('account.wishlist') }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">My wishlist</a>
+                        <a href="{{ route('account.orders') }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">My account</a>
+                    @else
+                        <a href="{{ route('login') }}" class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Log in / Sign up</a>
                     @endauth
                 </nav>
             </div>
+            </template>
         </header>
 
         <main id="main">

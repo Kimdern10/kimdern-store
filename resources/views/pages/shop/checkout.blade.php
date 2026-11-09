@@ -37,6 +37,9 @@ new #[Layout('layouts::shop')] class extends Component {
 
     public string $couponCode = '';
 
+    /** transfer = Paystack bank transfer (confirmed automatically), card = card or USSD. */
+    public string $payWith = 'transfer';
+
     public function mount(): void
     {
         Seo::set('Checkout')->noindex = true;
@@ -145,7 +148,7 @@ new #[Layout('layouts::shop')] class extends Component {
 
         if ($method === 'paystack') {
             try {
-                $this->redirect($paystack->initialize($order, route('checkout.callback')));
+                $this->redirect($paystack->initialize($order, route('checkout.callback'), $this->payWith === 'card' ? 'card' : 'transfer'));
 
                 return;
             } catch (\Throwable $e) {
@@ -237,19 +240,30 @@ new #[Layout('layouts::shop')] class extends Component {
             <section class="rounded-3xl border p-6" aria-labelledby="payment-title">
                 <h2 id="payment-title" class="flex items-center gap-3 text-lg font-bold"><span class="grid size-8 place-items-center rounded-full bg-brand-700 text-sm text-white">3</span> Payment</h2>
                 @if ($this->paysOnline)
-                    <div class="mt-5 flex items-start gap-4 rounded-2xl border-2 border-brand-600 bg-brand-50/60 p-4 dark:bg-brand-950/40">
-                        <flux:icon.credit-card class="mt-0.5 size-6 shrink-0 text-brand-700" />
-                        <div>
-                            <p class="font-bold">Pay with card, bank transfer or USSD</p>
-                            <p class="text-sm text-zinc-600 dark:text-zinc-400">You'll be taken to Paystack's secure page to pay. We never see your card details.</p>
-                        </div>
+                    <div class="mt-5 grid gap-3" role="radiogroup" aria-label="How do you want to pay?">
+                        @foreach ([
+                            'transfer' => ['building-library', 'Bank transfer', 'Send from OPay, Moniepoint, Kuda, PalmPay or any bank app to the account number shown on the next page. Your payment is confirmed automatically in seconds.', 'Confirmed instantly'],
+                            'card' => ['credit-card', 'Card or USSD', 'Visa, Mastercard, Verve or a USSD code from your bank.', null],
+                        ] as $value => [$icon, $title, $text, $badge])
+                            <label wire:key="pay-{{ $value }}" @class(['flex cursor-pointer items-start gap-4 rounded-2xl border-2 p-4 transition', 'border-brand-600 bg-brand-50/60 dark:bg-brand-950/40' => $payWith === $value, 'border-zinc-200 hover:border-brand-300 dark:border-zinc-800' => $payWith !== $value])>
+                                <input type="radio" wire:model.live="payWith" value="{{ $value }}" class="mt-1 size-4 text-brand-700 focus:ring-brand-600">
+                                <flux:icon :name="$icon" class="mt-0.5 size-6 shrink-0 text-brand-700" />
+                                <span>
+                                    <span class="flex flex-wrap items-center gap-2 font-bold">{{ $title }}
+                                        @if ($badge)<span class="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-bold text-brand-800 dark:bg-brand-900 dark:text-brand-200">{{ $badge }}</span>@endif
+                                    </span>
+                                    <span class="mt-0.5 block text-sm text-zinc-600 dark:text-zinc-400">{{ $text }}</span>
+                                </span>
+                            </label>
+                        @endforeach
                     </div>
+                    <p class="mt-3 flex items-center gap-1.5 text-xs text-zinc-500"><flux:icon.lock-closed variant="micro" /> Secured by Paystack. We never see your card or bank login.</p>
                 @else
                     <div class="mt-5 flex items-start gap-4 rounded-2xl border-2 border-brand-600 bg-brand-50/60 p-4 dark:bg-brand-950/40">
                         <flux:icon.building-library class="mt-0.5 size-6 shrink-0 text-brand-700" />
                         <div>
                             <p class="font-bold">Bank transfer</p>
-                            <p class="text-sm text-zinc-600 dark:text-zinc-400">After you place your order we'll show you our account details ({{ \App\Models\Setting::get('bank_name') }}). We ship as soon as your payment arrives.</p>
+                            <p class="text-sm text-zinc-600 dark:text-zinc-400">After you place your order we'll show you our account details ({{ \App\Models\Setting::get('bank_name') }}). Send the money from any bank app, then tap “I have sent the money”.</p>
                         </div>
                     </div>
                 @endif

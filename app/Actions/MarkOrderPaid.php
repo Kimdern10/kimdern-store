@@ -33,15 +33,21 @@ class MarkOrderPaid
             return false;
         }
 
-        $newlyPaid = DB::transaction(function () use ($order): bool {
+        $channel = match ($transaction['channel'] ?? null) {
+            'bank_transfer', 'dedicated_nuban' => 'transfer',
+            null => null,
+            default => 'card',
+        };
+
+        $newlyPaid = DB::transaction(function () use ($order, $channel): bool {
             $fresh = Order::query()->lockForUpdate()->findOrFail($order->id);
 
             if ($fresh->paid_at !== null || $fresh->status === OrderStatus::Cancelled) {
                 return false;
             }
 
-            $fresh->forceFill(['status' => OrderStatus::Paid, 'paid_at' => now()])->save();
-            $fresh->history()->create(['status' => OrderStatus::Paid, 'note' => 'Paid online with Paystack.']);
+            $fresh->forceFill(['status' => OrderStatus::Paid, 'paid_at' => now(), 'payment_channel' => $channel ?? $fresh->payment_channel])->save();
+            $fresh->history()->create(['status' => OrderStatus::Paid, 'note' => $channel === 'transfer' ? 'Bank transfer received and confirmed by Paystack.' : 'Paid online with Paystack.']);
 
             return true;
         });

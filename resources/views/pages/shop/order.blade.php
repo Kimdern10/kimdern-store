@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\OrderStatus;
+use App\Livewire\Concerns\ReportsBankTransfer;
 use App\Models\Order;
 use App\Services\Paystack;
 use App\Support\Seo;
@@ -13,6 +14,8 @@ use Livewire\Component;
  * It checks for updates every 30 seconds, so a payment or shipping update shows without reloading.
  */
 new #[Layout('layouts::shop')] class extends Component {
+    use ReportsBankTransfer;
+
     public Order $order;
 
     public bool $justPlaced = false;
@@ -33,15 +36,15 @@ new #[Layout('layouts::shop')] class extends Component {
         $this->order->refresh()->load(['items.product', 'history']);
     }
 
-    public function retryUrl(): ?string
+    public function retryUrl(string $via = 'transfer'): ?string
     {
         return $this->order->status === OrderStatus::Pending && $this->order->payment_method === 'paystack' && app(Paystack::class)->isConfigured()
-            ? URL::signedRoute('orders.pay', $this->order)
+            ? URL::signedRoute('orders.pay', ['order' => $this->order, 'via' => $via])
             : null;
     }
 }; ?>
 
-<div class="container-shop max-w-5xl pt-10" @if (! in_array($order->status, [OrderStatus::Delivered, OrderStatus::Cancelled], true)) wire:poll.30s="refreshOrder" @endif>
+<div class="container-shop max-w-5xl pt-10" @if ($order->awaitingTransferCheck()) wire:poll.10s="refreshOrder" @elseif (! in_array($order->status, [OrderStatus::Delivered, OrderStatus::Cancelled], true)) wire:poll.30s="refreshOrder" @endif>
     <div class="text-center" data-reveal>
         @if ($justPlaced)
             <div class="mx-auto grid size-20 place-items-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900 dark:text-brand-300">
@@ -65,7 +68,11 @@ new #[Layout('layouts::shop')] class extends Component {
     @if ($retry = $this->retryUrl())
         <div class="mt-8 flex flex-col items-center gap-3 rounded-3xl border-2 border-amber-300 bg-amber-50 p-6 text-center dark:border-amber-700 dark:bg-amber-950/30">
             <p class="font-semibold">This order is waiting for payment of {{ naira($order->total) }}.</p>
-            <flux:button variant="primary" :href="$retry" icon="credit-card">Pay now with Paystack</flux:button>
+            <div class="flex flex-wrap justify-center gap-3">
+                <flux:button variant="primary" :href="$this->retryUrl('transfer')" icon="building-library">Pay by bank transfer</flux:button>
+                <flux:button :href="$this->retryUrl('card')" icon="credit-card">Pay by card or USSD</flux:button>
+            </div>
+            <p class="text-xs text-zinc-500">Bank transfers from OPay, Moniepoint, Kuda or any bank are confirmed automatically.</p>
         </div>
     @endif
 

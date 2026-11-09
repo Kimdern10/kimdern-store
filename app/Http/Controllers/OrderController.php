@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Services\Paystack;
 use App\Support\Receipt;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 /**
@@ -18,11 +19,13 @@ class OrderController extends Controller
     /**
      * Start a new Paystack payment for an order that is still waiting.
      */
-    public function pay(Order $order, Paystack $paystack): RedirectResponse
+    public function pay(Request $request, Order $order, Paystack $paystack): RedirectResponse
     {
         abort_unless($order->status === OrderStatus::Pending && $paystack->isConfigured(), 404);
 
-        return redirect()->away($paystack->initialize($order, route('checkout.callback')));
+        $channel = $request->query('via') === 'card' ? 'card' : 'transfer';
+
+        return redirect()->away($paystack->initialize($order, route('checkout.callback'), $channel));
     }
 
     public function receipt(Order $order): Response

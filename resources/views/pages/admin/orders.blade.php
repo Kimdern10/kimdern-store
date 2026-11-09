@@ -80,7 +80,7 @@ new #[Layout('layouts::admin'), Title('Orders')] class extends Component {
                             <p class="text-xs text-zinc-500">{{ $order->created_at->format('j M Y, g:i a') }} · {{ $order->items_count }} {{ \Illuminate\Support\Str::plural('line', $order->items_count) }}</p>
                         </td>
                         <td class="px-5 py-3">{{ $order->name }}<p class="text-xs text-zinc-500">{{ $order->phone }} · {{ $order->state }}</p></td>
-                        <td class="px-5 py-3">{{ $order->payment_method === 'paystack' ? 'Paystack' : 'Transfer' }}<p class="text-xs {{ $order->paid_at ? 'text-brand-600' : 'text-amber-600' }}">{{ $order->paid_at ? 'Paid' : 'Not paid' }}</p></td>
+                        <td class="px-5 py-3">{{ $order->payment_method === 'paystack' ? 'Paystack' : 'Transfer' }}<p class="text-xs {{ $order->paid_at ? 'text-brand-600' : 'text-amber-600' }}">{{ $order->paid_at ? 'Paid' : ($order->transfer_reported_at ? 'Customer says sent: check bank' : 'Not paid') }}</p></td>
                         <td class="px-5 py-3"><flux:badge size="sm" :color="$order->status->colour()">{{ $order->status->label() }}</flux:badge></td>
                         <td class="px-5 py-3 text-end font-semibold">{{ naira($order->total) }}</td>
                     </tr>

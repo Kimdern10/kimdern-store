@@ -23,9 +23,23 @@ class Paystack
     }
 
     /**
-     * Start a payment for the order and return the Paystack page to send the customer to.
+     * How the customer can pay on Paystack's page. "transfer" shows a one-time account number the
+     * customer sends money to from any bank app (OPay, Moniepoint, Kuda, GTBank...); Paystack sees the
+     * money arrive and confirms the payment by itself within seconds.
+     *
+     * @var array<string, list<string>>
      */
-    public function initialize(Order $order, string $callbackUrl): string
+    public const array CHANNELS = [
+        'transfer' => ['bank_transfer'],
+        'card' => ['card', 'ussd', 'bank'],
+    ];
+
+    /**
+     * Start a payment for the order and return the Paystack page to send the customer to.
+     *
+     * @param  'transfer'|'card'|null  $channel
+     */
+    public function initialize(Order $order, string $callbackUrl, ?string $channel = null): string
     {
         $reference = $order->number.'-'.Str::upper(Str::random(6));
 
@@ -36,7 +50,7 @@ class Paystack
             'reference' => $reference,
             'callback_url' => $callbackUrl,
             'metadata' => ['order_number' => $order->number, 'customer_name' => $order->name],
-        ]);
+        ] + (isset(self::CHANNELS[$channel ?? '']) ? ['channels' => self::CHANNELS[$channel]] : []));
 
         $url = $response->json('data.authorization_url');
 
@@ -44,7 +58,7 @@ class Paystack
             throw new RuntimeException('Paystack could not start the payment: '.$response->json('message', 'no response'));
         }
 
-        $order->forceFill(['payment_reference' => $reference])->save();
+        $order->forceFill(['payment_reference' => $reference, 'payment_channel' => $channel])->save();
 
         return $url;
     }

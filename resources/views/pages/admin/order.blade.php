@@ -38,6 +38,21 @@ new #[Layout('layouts::admin'), Title('Order')] class extends Component {
         return $timeline[$this->order->status->step() + 1] ?? null;
     }
 
+    /**
+     * The owner has seen the transfer in their bank app.
+     */
+    public function confirmTransfer(UpdateOrderStatus $updateOrderStatus): void
+    {
+        abort_unless($this->order->status === OrderStatus::Pending, 422);
+
+        $updateOrderStatus->handle($this->order, OrderStatus::Paid, 'Bank transfer received. Thank you!');
+
+        $this->order->refresh()->load(['items.product', 'history', 'user']);
+        $this->status = $this->nextStatus()?->value ?? $this->order->status->value;
+
+        Flux::toast(variant: 'success', text: 'Payment confirmed. The customer has been emailed their receipt.');
+    }
+
     public function updateStatus(UpdateOrderStatus $updateOrderStatus): void
     {
         $this->validate([
@@ -71,6 +86,19 @@ new #[Layout('layouts::admin'), Title('Order')] class extends Component {
             <flux:button icon="eye" :href="$order->trackingUrl()" target="_blank">Customer view</flux:button>
         </div>
     </div>
+
+    @if ($order->awaitingTransferCheck())
+        <div class="flex flex-col gap-4 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 sm:flex-row sm:items-center sm:justify-between dark:border-amber-700 dark:bg-amber-950/30">
+            <div class="flex items-start gap-3">
+                <flux:icon.banknotes class="mt-0.5 size-6 shrink-0 text-amber-600" />
+                <div>
+                    <p class="font-bold">{{ $order->name }} says they sent {{ naira($order->total) }} {{ $order->transfer_reported_at->diffForHumans() }}.</p>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">Check your bank app for {{ naira($order->total) }} with narration {{ $order->number }}. Confirm only when you can see it.</p>
+                </div>
+            </div>
+            <flux:button variant="primary" icon="check" wire:click="confirmTransfer" wire:confirm="Have you seen {{ naira($order->total) }} in your account?">Money received</flux:button>
+        </div>
+    @endif
 
     <div class="grid gap-6 xl:grid-cols-3">
         <div class="space-y-6 xl:col-span-2">
