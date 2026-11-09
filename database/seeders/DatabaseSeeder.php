@@ -2,24 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
-     * Seed the application's database.
+     * Seed the shop. Demo orders are only added on a local copy so the admin dashboard has something to show.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call(ShopSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        if (app()->isLocal()) {
+            $this->call(DemoOrderSeeder::class);
+        }
     }
 }
