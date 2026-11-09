@@ -17,6 +17,7 @@
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
         @fonts
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @include('partials.appearance-default')
         @fluxAppearance
     </head>
     <body class="min-h-screen bg-zinc-50 font-sans antialiased dark:bg-zinc-950">

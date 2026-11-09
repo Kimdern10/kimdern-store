@@ -35,6 +35,7 @@
 
         @fonts
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @include('partials.appearance-default')
         @fluxAppearance
     </head>
     <body class="min-h-screen bg-white font-sans text-zinc-800 antialiased selection:bg-amber-200 selection:text-zinc-900 dark:bg-zinc-950 dark:text-zinc-200">

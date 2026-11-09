@@ -1,59 +1,63 @@
 <x-layouts::auth :title="__('Log in')">
-    <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
+    <div class="flex flex-col gap-7">
+        <x-auth-header title="Welcome back 👋" description="Log in to track your orders, see your wishlist and check out faster." />
 
-        <!-- Session Status -->
-        <x-auth-session-status class="text-center" :status="session('status')" />
+        <x-auth-session-status class="rounded-2xl bg-brand-50 px-4 py-3 text-center dark:bg-brand-950/50" :status="session('status')" />
 
         <x-passkey-verify />
 
-        <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-5" x-data="{ sending: false }" x-on:submit="sending = true">
             @csrf
 
-            <!-- Email Address -->
             <flux:input
                 name="email"
-                :label="__('Email address')"
+                label="Email address"
                 :value="old('email')"
                 type="email"
                 required
                 autofocus
                 autocomplete="email"
-                placeholder="email@example.com"
+                icon="envelope"
+                placeholder="you@example.com"
             />
 
-            <!-- Password -->
             <div class="relative">
                 <flux:input
                     name="password"
-                    :label="__('Password')"
+                    label="Password"
                     type="password"
                     required
                     autocomplete="current-password"
-                    :placeholder="__('Password')"
+                    icon="lock-closed"
+                    placeholder="Your password"
                     viewable
                 />
 
                 @if (Route::has('password.request'))
-                    <flux:link class="absolute top-0 text-sm end-0" :href="route('password.request')" wire:navigate>
-                        {{ __('Forgot your password?') }}
-                    </flux:link>
+                    <a href="{{ route('password.request') }}" class="absolute end-0 top-0 text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400">Forgot password?</a>
                 @endif
             </div>
 
-            <!-- Remember Me -->
-            <flux:checkbox name="remember" :label="__('Remember me')" :checked="old('remember')" />
+            <flux:checkbox name="remember" label="Keep me logged in on this device" :checked="old('remember')" />
 
-            <div class="flex items-center justify-end">
-                <flux:button variant="primary" type="submit" class="w-full" data-test="login-button">
-                    {{ __('Log in') }}
-                </flux:button>
-            </div>
+            <flux:button variant="primary" type="submit" class="h-12 w-full" data-test="login-button" x-bind:disabled="sending">
+                <span x-show="! sending">Log in</span>
+                <span x-show="sending" x-cloak class="flex items-center gap-2"><span class="size-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span> Logging in…</span>
+            </flux:button>
         </form>
 
-        <div class="space-x-1 text-sm text-center rtl:space-x-reverse text-zinc-600 dark:text-zinc-400">
-            <span>{{ __('Don\'t have an account?') }}</span>
-            <flux:link :href="route('register')" wire:navigate>{{ __('Sign up') }}</flux:link>
-        </div>
+        @if (Route::has('register'))
+            <div class="flex items-center gap-4 text-xs font-semibold tracking-widest text-zinc-400 uppercase">
+                <span class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></span> New to {{ \Illuminate\Support\Str::of(\App\Models\Setting::get('store_name'))->before(' ') }}? <span class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></span>
+            </div>
+
+            <a href="{{ route('register') }}" class="flex h-12 items-center justify-center gap-2 rounded-xl border-2 border-brand-600 font-bold text-brand-700 transition hover:bg-brand-50 dark:text-brand-300 dark:hover:bg-brand-950/50">
+                <flux:icon.user-plus variant="micro" /> Create a free account
+            </a>
+        @endif
+
+        <p class="text-center text-sm text-zinc-500">
+            Just shopping? <a href="{{ route('cart') }}" class="font-semibold text-brand-700 hover:underline dark:text-brand-400">Check out as a guest</a> or <a href="{{ route('orders.track') }}" class="font-semibold text-brand-700 hover:underline dark:text-brand-400">track an order</a>.
+        </p>
     </div>
 </x-layouts::auth>

@@ -21,12 +21,16 @@ class CreateNewUser implements CreatesNewUsers
     {
         Validator::make($input, [
             ...$this->profileRules(),
+            'phone' => ['nullable', 'string', 'regex:/^\+?[0-9 ]{10,16}$/'],
             'password' => $this->passwordRules(),
+        ], [
+            'phone.regex' => 'Enter a valid phone number, e.g. 0803 123 4567.',
         ])->validate();
 
         return User::create([
             'name' => $input['name'],
-            'email' => $input['email'],
+            'email' => strtolower($input['email']),
+            'phone' => filled($input['phone'] ?? null) ? $input['phone'] : null,
             'password' => $input['password'],
         ]);
     }
