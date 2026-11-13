@@ -88,7 +88,7 @@ new #[Layout('layouts::admin'), Title('Messages')] class extends Component {
                             @if ($message->phone)<div><dt class="text-xs text-zinc-400">Phone</dt><dd><a href="tel:{{ $message->phone }}" class="text-brand-700 hover:underline dark:text-brand-400">{{ $message->phone }}</a></dd></div>@endif
                             @if ($message->order_number)
                                 @php($order = \App\Models\Order::query()->where('number', $message->order_number)->first())
-                                <div><dt class="text-xs text-zinc-400">Order</dt><dd>@if ($order)<a href="{{ route('admin.orders.show', $order) }}" class="text-brand-700 hover:underline dark:text-brand-400">{{ $order->number }}</a>@else{{ $message->order_number }} (not found)@endif</dd></div>
+                                <div><dt class="text-xs text-zinc-400">Order</dt><dd>@if ($order)<a href="{{ route('admin.orders.show', $order) }}" class="text-brand-700 hover:underline dark:text-brand-400" wire:navigate.hover>{{ $order->number }}</a>@else{{ $message->order_number }} (not found)@endif</dd></div>
                             @endif
                         </dl>
                         <div class="mt-4 flex flex-wrap gap-2">

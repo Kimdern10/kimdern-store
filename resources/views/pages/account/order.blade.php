@@ -71,7 +71,7 @@ new #[Title('Order details')] class extends Component {
 <div @if ($order->status === \App\Enums\OrderStatus::Pending) wire:poll.20s="refreshOrder" @endif>
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-            <a href="{{ route('account.orders') }}" wire:navigate class="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400">← All orders</a>
+            <a href="{{ route('account.orders') }}" wire:navigate.hover class="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400">← All orders</a>
             <h2 class="mt-2 text-xl font-bold">Order {{ $order->number }}</h2>
             <p class="text-sm text-zinc-500">Placed {{ $order->created_at->format('j F Y, g:i a') }}</p>
         </div>

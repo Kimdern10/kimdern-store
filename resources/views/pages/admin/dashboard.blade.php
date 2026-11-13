@@ -91,7 +91,7 @@ new #[Layout('layouts::admin'), Title('Dashboard')] class extends Component {
             <flux:heading size="xl">Good {{ now()->hour < 12 ? 'morning' : (now()->hour < 17 ? 'afternoon' : 'evening') }}, {{ \Illuminate\Support\Str::of(auth()->user()->name)->before(' ') }}</flux:heading>
             <flux:text>Here's how {{ \App\Models\Setting::get('store_name') }} is doing.</flux:text>
         </div>
-        <flux:button variant="primary" icon="plus" :href="route('admin.products.create')">Add product</flux:button>
+        <flux:button variant="primary" icon="plus" :href="route('admin.products.create')" wire:navigate.hover>Add product</flux:button>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -155,7 +155,7 @@ new #[Layout('layouts::admin'), Title('Dashboard')] class extends Component {
             <ul class="mt-4 divide-y divide-zinc-100 dark:divide-zinc-800">
                 @forelse ($this->lowStock as $row)
                     <li class="flex items-center justify-between gap-3 py-2.5 text-sm">
-                        <a href="{{ route('admin.products.edit', $row['product_id']) }}" class="min-w-0 hover:underline">
+                        <a href="{{ route('admin.products.edit', $row['product_id']) }}" class="min-w-0 hover:underline" wire:navigate.hover>
                             <p class="truncate font-medium">{{ $row['name'] }}</p>
                             @if ($row['detail'])<p class="text-xs text-zinc-500">{{ $row['detail'] }}</p>@endif
                         </a>
@@ -171,7 +171,7 @@ new #[Layout('layouts::admin'), Title('Dashboard')] class extends Component {
     <section class="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
         <div class="flex items-center justify-between p-5">
             <flux:heading>Recent orders</flux:heading>
-            <flux:button size="sm" variant="ghost" :href="route('admin.orders')">See all</flux:button>
+            <flux:button size="sm" variant="ghost" :href="route('admin.orders')" wire:navigate.hover>See all</flux:button>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
@@ -181,7 +181,7 @@ new #[Layout('layouts::admin'), Title('Dashboard')] class extends Component {
                 <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                     @foreach ($this->recentOrders as $order)
                         <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                            <td class="px-5 py-3"><a href="{{ route('admin.orders.show', $order) }}" class="font-semibold text-brand-700 hover:underline dark:text-brand-400">{{ $order->number }}</a><p class="text-xs text-zinc-500">{{ $order->created_at->diffForHumans() }}</p></td>
+                            <td class="px-5 py-3"><a href="{{ route('admin.orders.show', $order) }}" class="font-semibold text-brand-700 hover:underline dark:text-brand-400" wire:navigate.hover>{{ $order->number }}</a><p class="text-xs text-zinc-500">{{ $order->created_at->diffForHumans() }}</p></td>
                             <td class="px-5 py-3">{{ $order->name }}<p class="text-xs text-zinc-500">{{ $order->state }}</p></td>
                             <td class="px-5 py-3"><flux:badge size="sm" :color="$order->status->colour()">{{ $order->status->label() }}</flux:badge></td>
                             <td class="px-5 py-3 text-end font-semibold">{{ naira($order->total) }}</td>

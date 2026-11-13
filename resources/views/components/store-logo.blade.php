@@ -3,7 +3,7 @@
     $logo = \App\Models\Setting::logoUrl();
     $name = \App\Models\Setting::get('store_name');
 @endphp
-<a href="{{ route('home') }}" wire:navigate {{ $attributes->class('group flex shrink-0 items-center gap-2') }} aria-label="{{ $name }} home">
+<a href="{{ route('home') }}" wire:navigate.hover {{ $attributes->class('group flex shrink-0 items-center gap-2') }} aria-label="{{ $name }} home">
     @if ($logo)
         <img src="{{ $logo }}" alt="{{ $name }}" class="h-9 w-auto max-w-40 object-contain lg:h-10">
     @else

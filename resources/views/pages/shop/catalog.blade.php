@@ -182,9 +182,9 @@ new #[Layout('layouts::shop')] class extends Component {
     <section class="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-amber-50 dark:from-brand-950 dark:via-zinc-950 dark:to-zinc-900">
         <div class="container-shop py-10 sm:py-14">
             <nav class="text-sm text-zinc-500" aria-label="Breadcrumb">
-                <a href="{{ route('home') }}" wire:navigate class="hover:text-brand-700">Home</a> <span class="mx-1">/</span>
+                <a href="{{ route('home') }}" wire:navigate.hover class="hover:text-brand-700">Home</a> <span class="mx-1">/</span>
                 @if ($category)
-                    <a href="{{ route('shop') }}" wire:navigate class="hover:text-brand-700">Shop</a> <span class="mx-1">/</span> <span class="text-zinc-800 dark:text-zinc-200">{{ $category->name }}</span>
+                    <a href="{{ route('shop') }}" wire:navigate.hover class="hover:text-brand-700">Shop</a> <span class="mx-1">/</span> <span class="text-zinc-800 dark:text-zinc-200">{{ $category->name }}</span>
                 @else
                     <span class="text-zinc-800 dark:text-zinc-200">Shop</span>
                 @endif
@@ -207,7 +207,7 @@ new #[Layout('layouts::shop')] class extends Component {
             @unless ($category)
                 <div class="no-scrollbar mt-6 flex gap-2 overflow-x-auto pb-1">
                     @foreach ($this->allCategories as $cat)
-                        <a href="{{ route('category', $cat) }}" wire:navigate class="shrink-0 rounded-full border bg-white/70 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:border-brand-600 hover:text-brand-700 dark:bg-zinc-900/70 dark:hover:text-brand-400">{{ $cat->name }}</a>
+                        <a href="{{ route('category', $cat) }}" wire:navigate.hover class="shrink-0 rounded-full border bg-white/70 px-4 py-2 text-sm font-semibold backdrop-blur transition hover:border-brand-600 hover:text-brand-700 dark:bg-zinc-900/70 dark:hover:text-brand-400">{{ $cat->name }}</a>
                     @endforeach
                 </div>
             @endunless

@@ -53,7 +53,9 @@ class Setting extends Model
      */
     public static function values(): array
     {
-        return Cache::rememberForever(self::CACHE_KEY, function (): array {
+        // memo() keeps the result in memory for the rest of the request, so pages that read many
+        // settings only reach the cache store once.
+        return Cache::memo()->rememberForever(self::CACHE_KEY, function (): array {
             $saved = Schema::hasTable('settings') ? static::query()->pluck('value', 'key')->all() : [];
 
             return array_merge(self::DEFAULTS, array_intersect_key($saved, self::DEFAULTS));
@@ -74,7 +76,7 @@ class Setting extends Model
             static::query()->updateOrCreate(['key' => $key], ['value' => $value]);
         }
 
-        Cache::forget(self::CACHE_KEY);
+        Cache::memo()->forget(self::CACHE_KEY);
     }
 
     /**

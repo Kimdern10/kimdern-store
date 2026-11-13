@@ -5,7 +5,7 @@
 @endphp
 <article wire:key="card-{{ $product->id }}" data-reveal="{{ $delay }}" {{ $attributes->class('group relative flex flex-col') }}>
     <div class="relative aspect-[4/5] overflow-hidden rounded-3xl bg-zinc-100 dark:bg-zinc-900">
-        <a href="{{ route('product', $product) }}" wire:navigate class="block size-full" tabindex="-1">
+        <a href="{{ route('product', $product) }}" wire:navigate.hover class="block size-full" tabindex="-1">
             <img src="{{ $product->imageUrl() }}" alt="{{ $product->name }}" loading="lazy" class="size-full object-cover transition duration-700 ease-out group-hover:scale-105">
         </a>
 
@@ -32,7 +32,7 @@
         @if ($inStock)
             <div class="absolute inset-x-3 bottom-3 translate-y-0 opacity-100 transition duration-300 lg:translate-y-3 lg:opacity-0 lg:group-focus-within:translate-y-0 lg:group-focus-within:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:opacity-100">
                 @if ($hasVariants)
-                    <a href="{{ route('product', $product) }}" wire:navigate class="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white/95 text-sm font-bold text-zinc-900 shadow-lg backdrop-blur transition hover:bg-brand-700 hover:text-white">
+                    <a href="{{ route('product', $product) }}" wire:navigate.hover class="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white/95 text-sm font-bold text-zinc-900 shadow-lg backdrop-blur transition hover:bg-brand-700 hover:text-white">
                         Choose options
                     </a>
                 @else
@@ -49,7 +49,7 @@
     <div class="mt-4 flex flex-1 flex-col gap-1 px-1">
         <p class="text-xs font-semibold tracking-wide text-zinc-500 uppercase">{{ $product->brand ?? $product->category?->name }}</p>
         <h3 class="font-semibold leading-snug">
-            <a href="{{ route('product', $product) }}" wire:navigate class="hover:text-brand-700 dark:hover:text-brand-400">{{ $product->name }}</a>
+            <a href="{{ route('product', $product) }}" wire:navigate.hover class="hover:text-brand-700 dark:hover:text-brand-400">{{ $product->name }}</a>
         </h3>
         @if ($product->reviews_count > 0)
             <x-stars :rating="$product->rating" :count="$product->reviews_count" />

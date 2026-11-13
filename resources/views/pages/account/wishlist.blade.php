@@ -33,7 +33,7 @@ new #[Title('My wishlist')] class extends Component {
             <flux:icon.heart class="mx-auto size-10 text-zinc-300" />
             <p class="mt-3 font-semibold">Nothing saved yet</p>
             <p class="text-sm text-zinc-500">Tap the heart on any product to save it for later.</p>
-            <flux:button variant="primary" class="mt-5" href="{{ route('shop') }}">Browse products</flux:button>
+            <flux:button variant="primary" class="mt-5" href="{{ route('shop') }}" wire:navigate.hover>Browse products</flux:button>
         </div>
     @else
         <div class="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 xl:grid-cols-3">

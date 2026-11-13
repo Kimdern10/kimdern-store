@@ -45,7 +45,7 @@ new #[Layout('layouts::shop')] class extends Component {
         Seo::set('Checkout')->noindex = true;
 
         if ($this->cart->isEmpty()) {
-            $this->redirectRoute('cart');
+            $this->redirectRoute('cart', navigate: true);
 
             return;
         }
@@ -157,7 +157,7 @@ new #[Layout('layouts::shop')] class extends Component {
             }
         }
 
-        $this->redirect($order->trackingUrl());
+        $this->redirect($order->trackingUrl(), navigate: true);
     }
 }; ?>
 
@@ -170,7 +170,7 @@ new #[Layout('layouts::shop')] class extends Component {
     @guest
         <div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-brand-50 px-5 py-4 text-sm dark:bg-brand-950/60">
             <p>Checking out as a guest. Have an account? Log in to save your address and track orders easily.</p>
-            <a href="{{ route('login') }}" wire:navigate class="font-bold text-brand-700 hover:underline dark:text-brand-400">Log in →</a>
+            <a href="{{ route('login') }}" wire:navigate.hover class="font-bold text-brand-700 hover:underline dark:text-brand-400">Log in →</a>
         </div>
     @endguest
 
@@ -315,7 +315,7 @@ new #[Layout('layouts::shop')] class extends Component {
                 <span wire:loading.remove wire:target="placeOrder" class="flex items-center gap-2"><flux:icon.lock-closed variant="micro" /> {{ $this->paysOnline ? 'Pay '.naira($this->totals['total']) : 'Place order' }}</span>
                 <span wire:loading wire:target="placeOrder" class="flex items-center gap-2"><span class="size-5 animate-spin rounded-full border-2 border-white border-t-transparent"></span> Please wait...</span>
             </button>
-            <p class="text-center text-xs text-zinc-500">By placing your order you agree to our <a href="{{ route('shipping') }}" wire:navigate class="underline">delivery & returns policy</a>.</p>
+            <p class="text-center text-xs text-zinc-500">By placing your order you agree to our <a href="{{ route('shipping') }}" wire:navigate.hover class="underline">delivery & returns policy</a>.</p>
         </aside>
     </form>
 </div>

@@ -7,7 +7,7 @@
                 <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-brand-950 dark:text-white">Hello, {{ \Illuminate\Support\Str::of(auth()->user()->name)->before(' ') }} 👋</h1>
             </div>
             @if (auth()->user()->is_admin)
-                <flux:button href="{{ route('admin.dashboard') }}" icon="cog-6-tooth" size="sm">Shop admin</flux:button>
+                <flux:button href="{{ route('admin.dashboard') }}" icon="cog-6-tooth" size="sm" wire:navigate.hover>Shop admin</flux:button>
             @endif
         </div>
 
@@ -21,7 +21,7 @@
                     ['security.edit', 'lock-closed', 'Password & security', ['security.edit']],
                     ['appearance.edit', 'swatch', 'Appearance', ['appearance.edit']],
                 ] as [$route, $icon, $label, $active])
-                    <a href="{{ route($route) }}" @class(['flex shrink-0 items-center gap-3 rounded-full px-4 py-2.5 text-sm font-semibold transition lg:rounded-2xl', 'bg-brand-700 text-white shadow-lg shadow-brand-700/20' => request()->routeIs(...$active), 'hover:bg-zinc-100 dark:hover:bg-zinc-800' => ! request()->routeIs(...$active)])>
+                    <a href="{{ route($route) }}" wire:navigate.hover @class(['flex shrink-0 items-center gap-3 rounded-full px-4 py-2.5 text-sm font-semibold transition lg:rounded-2xl', 'bg-brand-700 text-white shadow-lg shadow-brand-700/20' => request()->routeIs(...$active), 'hover:bg-zinc-100 dark:hover:bg-zinc-800' => ! request()->routeIs(...$active)])>
                         <flux:icon :name="$icon" variant="outline" class="size-5" /> {{ $label }}
                     </a>
                 @endforeach

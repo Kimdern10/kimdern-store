@@ -31,7 +31,7 @@ new #[Title('My orders')] class extends Component {
             <flux:icon.shopping-bag class="mx-auto size-10 text-zinc-300" />
             <p class="mt-3 font-semibold">You haven't ordered anything yet.</p>
             <p class="text-sm text-zinc-500">Orders you place while logged in will show here.</p>
-            <flux:button variant="primary" class="mt-5" href="{{ route('shop') }}">Start shopping</flux:button>
+            <flux:button variant="primary" class="mt-5" href="{{ route('shop') }}" wire:navigate.hover>Start shopping</flux:button>
         </div>
     @else
         <div class="mt-6 space-y-4">

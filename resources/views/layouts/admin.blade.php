@@ -28,23 +28,23 @@
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('admin.dashboard')">Dashboard</flux:sidebar.item>
-                <flux:sidebar.item icon="shopping-bag" :href="route('admin.orders')" :current="request()->routeIs('admin.orders*')" :badge="$openOrders ?: null">Orders</flux:sidebar.item>
+                <flux:sidebar.item icon="home" :href="route('admin.dashboard')" wire:navigate.hover :current="request()->routeIs('admin.dashboard')">Dashboard</flux:sidebar.item>
+                <flux:sidebar.item icon="shopping-bag" :href="route('admin.orders')" wire:navigate.hover :current="request()->routeIs('admin.orders*')" :badge="$openOrders ?: null">Orders</flux:sidebar.item>
                 <flux:sidebar.group heading="Catalogue" class="grid">
-                    <flux:sidebar.item icon="cube" :href="route('admin.products')" :current="request()->routeIs('admin.products*')">Products</flux:sidebar.item>
-                    <flux:sidebar.item icon="squares-2x2" :href="route('admin.categories')" :current="request()->routeIs('admin.categories')">Categories</flux:sidebar.item>
-                    <flux:sidebar.item icon="star" :href="route('admin.reviews')" :current="request()->routeIs('admin.reviews')" :badge="$pendingReviews ?: null">Reviews</flux:sidebar.item>
-                    <flux:sidebar.item icon="bell-alert" :href="route('admin.stock-alerts')" :current="request()->routeIs('admin.stock-alerts')" :badge="$waitingAlerts ?: null">Back in stock</flux:sidebar.item>
+                    <flux:sidebar.item icon="cube" :href="route('admin.products')" wire:navigate.hover :current="request()->routeIs('admin.products*')">Products</flux:sidebar.item>
+                    <flux:sidebar.item icon="squares-2x2" :href="route('admin.categories')" wire:navigate.hover :current="request()->routeIs('admin.categories')">Categories</flux:sidebar.item>
+                    <flux:sidebar.item icon="star" :href="route('admin.reviews')" wire:navigate.hover :current="request()->routeIs('admin.reviews')" :badge="$pendingReviews ?: null">Reviews</flux:sidebar.item>
+                    <flux:sidebar.item icon="bell-alert" :href="route('admin.stock-alerts')" wire:navigate.hover :current="request()->routeIs('admin.stock-alerts')" :badge="$waitingAlerts ?: null">Back in stock</flux:sidebar.item>
                 </flux:sidebar.group>
                 <flux:sidebar.group heading="Sales" class="grid">
-                    <flux:sidebar.item icon="inbox" :href="route('admin.messages')" :current="request()->routeIs('admin.messages')" :badge="$unreadMessages ?: null">Messages</flux:sidebar.item>
-                    <flux:sidebar.item icon="users" :href="route('admin.customers')" :current="request()->routeIs('admin.customers')">Customers</flux:sidebar.item>
-                    <flux:sidebar.item icon="ticket" :href="route('admin.coupons')" :current="request()->routeIs('admin.coupons')">Coupons</flux:sidebar.item>
-                    <flux:sidebar.item icon="truck" :href="route('admin.zones')" :current="request()->routeIs('admin.zones')">Delivery zones</flux:sidebar.item>
+                    <flux:sidebar.item icon="inbox" :href="route('admin.messages')" wire:navigate.hover :current="request()->routeIs('admin.messages')" :badge="$unreadMessages ?: null">Messages</flux:sidebar.item>
+                    <flux:sidebar.item icon="users" :href="route('admin.customers')" wire:navigate.hover :current="request()->routeIs('admin.customers')">Customers</flux:sidebar.item>
+                    <flux:sidebar.item icon="ticket" :href="route('admin.coupons')" wire:navigate.hover :current="request()->routeIs('admin.coupons')">Coupons</flux:sidebar.item>
+                    <flux:sidebar.item icon="truck" :href="route('admin.zones')" wire:navigate.hover :current="request()->routeIs('admin.zones')">Delivery zones</flux:sidebar.item>
                 </flux:sidebar.group>
                 <flux:sidebar.group heading="Website" class="grid">
-                    <flux:sidebar.item icon="photo" :href="route('admin.banners')" :current="request()->routeIs('admin.banners')">Home banners</flux:sidebar.item>
-                    <flux:sidebar.item icon="cog-6-tooth" :href="route('admin.settings')" :current="request()->routeIs('admin.settings')">Site settings</flux:sidebar.item>
+                    <flux:sidebar.item icon="photo" :href="route('admin.banners')" wire:navigate.hover :current="request()->routeIs('admin.banners')">Home banners</flux:sidebar.item>
+                    <flux:sidebar.item icon="cog-6-tooth" :href="route('admin.settings')" wire:navigate.hover :current="request()->routeIs('admin.settings')">Site settings</flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 

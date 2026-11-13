@@ -63,7 +63,7 @@ new class extends Component {
                         </div>
                         <p class="text-lg font-semibold">Your cart is empty</p>
                         <p class="text-sm text-zinc-500">Find something you love and it will show up here.</p>
-                        <flux:button variant="primary" href="{{ route('shop') }}">Start shopping</flux:button>
+                        <flux:button variant="primary" href="{{ route('shop') }}" wire:navigate.hover>Start shopping</flux:button>
                     </div>
                 @else
                     @php($subtotal = $this->cart->subtotal())
@@ -84,11 +84,11 @@ new class extends Component {
                     <ul class="flex-1 divide-y overflow-y-auto px-5">
                         @foreach ($this->cart->lines() as $line)
                             <li wire:key="drawer-{{ $line->key }}" class="flex gap-4 py-4">
-                                <a href="{{ route('product', $line->product) }}" wire:navigate class="shrink-0">
+                                <a href="{{ route('product', $line->product) }}" wire:navigate.hover class="shrink-0">
                                     <img src="{{ $line->product->imageUrl() }}" alt="{{ $line->product->name }}" class="size-20 rounded-xl object-cover" loading="lazy">
                                 </a>
                                 <div class="flex min-w-0 flex-1 flex-col">
-                                    <a href="{{ route('product', $line->product) }}" wire:navigate class="truncate font-semibold hover:text-brand-700 dark:hover:text-brand-400">{{ $line->product->name }}</a>
+                                    <a href="{{ route('product', $line->product) }}" wire:navigate.hover class="truncate font-semibold hover:text-brand-700 dark:hover:text-brand-400">{{ $line->product->name }}</a>
                                     @if ($line->variantLabel())
                                         <p class="text-xs text-zinc-500">{{ $line->variantLabel() }}</p>
                                     @endif
@@ -116,8 +116,8 @@ new class extends Component {
                             <span class="text-lg font-extrabold">{{ naira($subtotal) }}</span>
                         </div>
                         <p class="text-xs text-zinc-500">Delivery and discount codes are worked out at checkout.</p>
-                        <flux:button variant="primary" href="{{ route('checkout') }}" class="w-full" icon-trailing="arrow-right">Checkout</flux:button>
-                        <flux:button variant="ghost" href="{{ route('cart') }}" class="w-full">View cart</flux:button>
+                        <flux:button variant="primary" href="{{ route('checkout') }}" class="w-full" icon-trailing="arrow-right" wire:navigate.hover>Checkout</flux:button>
+                        <flux:button variant="ghost" href="{{ route('cart') }}" class="w-full" wire:navigate.hover>View cart</flux:button>
                     </div>
                 @endif
             </aside>

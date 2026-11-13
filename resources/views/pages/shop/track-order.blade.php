@@ -49,7 +49,7 @@ new #[Layout('layouts::shop')] class extends Component {
             return;
         }
 
-        $this->redirect($order->trackingUrl());
+        $this->redirect($order->trackingUrl(), navigate: true);
     }
 }; ?>
 
@@ -69,5 +69,5 @@ new #[Layout('layouts::shop')] class extends Component {
         </flux:button>
     </form>
 
-    <p class="mt-6 text-center text-sm text-zinc-500">Have an account? <a href="{{ route('account.orders') }}" wire:navigate class="font-semibold text-brand-700 hover:underline dark:text-brand-400">See all your orders</a>.</p>
+    <p class="mt-6 text-center text-sm text-zinc-500">Have an account? <a href="{{ route('account.orders') }}" wire:navigate.hover class="font-semibold text-brand-700 hover:underline dark:text-brand-400">See all your orders</a>.</p>
 </div>

@@ -18,7 +18,7 @@
                 <flux:button type="submit" variant="primary" class="h-12 w-full">Send the link again</flux:button>
             </form>
 
-            <flux:button :href="route('home')" class="h-12 w-full">Keep shopping</flux:button>
+            <flux:button :href="route('home')" class="h-12 w-full" wire:navigate.hover>Keep shopping</flux:button>
 
             <form method="POST" action="{{ route('logout') }}" class="text-center">
                 @csrf

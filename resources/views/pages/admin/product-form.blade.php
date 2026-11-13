@@ -214,14 +214,14 @@ new #[Layout('layouts::admin'), Title('Product')] class extends Component {
         $this->photos = [];
         $emailed = app(SendStockAlerts::class)->handle($this->product);
         Flux::toast(variant: 'success', text: 'Product saved.'.($emailed ? " {$emailed} waiting ".Str::plural('shopper', $emailed).' emailed that it is back in stock.' : ''));
-        $this->redirectRoute('admin.products.edit', $this->product->id);
+        $this->redirectRoute('admin.products.edit', $this->product->id, navigate: true);
     }
 }; ?>
 
 <form wire:submit="save" class="space-y-6">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-            <a href="{{ route('admin.products') }}" class="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400">← Products</a>
+            <a href="{{ route('admin.products') }}" class="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400" wire:navigate.hover>← Products</a>
             <flux:heading size="xl" class="mt-1">{{ $product ? 'Edit '.$product->name : 'Add a product' }}</flux:heading>
         </div>
         <div class="flex gap-2">

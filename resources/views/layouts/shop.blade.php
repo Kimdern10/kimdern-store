@@ -2,7 +2,7 @@
 @php
     $store = \App\Models\Setting::values();
     $seo = app(\App\Support\Seo::class);
-    $navCategories = \App\Models\Category::query()->active()->get(['id', 'name', 'slug', 'department']);
+    $navCategories = \App\Models\Category::forMenu();
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -61,26 +61,26 @@
                 <x-store-logo />
 
                 <nav class="ms-4 hidden items-center gap-1 text-sm font-semibold lg:flex" aria-label="Main">
-                    <a href="{{ route('home') }}" wire:navigate @class(['flex items-center gap-1.5 rounded-full px-3 py-2 transition hover:bg-zinc-100 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-400', 'bg-brand-50 text-brand-800 dark:bg-brand-950 dark:text-brand-300' => request()->routeIs('home')])>
+                    <a href="{{ route('home') }}" wire:navigate.hover @class(['flex items-center gap-1.5 rounded-full px-3 py-2 transition hover:bg-zinc-100 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-400', 'bg-brand-50 text-brand-800 dark:bg-brand-950 dark:text-brand-300' => request()->routeIs('home')])>
                         <flux:icon.home variant="micro" /> Home
                     </a>
-                    <a href="{{ route('shop') }}" wire:navigate @class(['rounded-full px-3 py-2 transition hover:bg-zinc-100 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-400', 'bg-brand-50 text-brand-800 dark:bg-brand-950 dark:text-brand-300' => request()->routeIs('shop')])>Shop all</a>
+                    <a href="{{ route('shop') }}" wire:navigate.hover @class(['rounded-full px-3 py-2 transition hover:bg-zinc-100 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-400', 'bg-brand-50 text-brand-800 dark:bg-brand-950 dark:text-brand-300' => request()->routeIs('shop')])>Shop all</a>
                     @foreach (\App\Models\Category::DEPARTMENTS as $key => $label)
                         <div class="group relative">
-                            <a href="{{ route('shop', ['department' => $key]) }}" wire:navigate class="flex items-center gap-1 rounded-full px-3 py-2 transition hover:bg-zinc-100 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-400">
+                            <a href="{{ route('shop', ['department' => $key]) }}" wire:navigate.hover class="flex items-center gap-1 rounded-full px-3 py-2 transition hover:bg-zinc-100 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-400">
                                 {{ $label }} <flux:icon.chevron-down variant="micro" class="opacity-60 transition group-hover:rotate-180" />
                             </a>
                             <div class="invisible absolute start-0 top-full w-56 translate-y-2 pt-2 opacity-0 transition duration-200 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                                 <div class="rounded-2xl border border-zinc-200 bg-white p-2 shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
                                     @foreach ($navCategories->where('department', $key) as $category)
-                                        <a href="{{ route('category', $category) }}" wire:navigate class="block rounded-xl px-3 py-2 font-medium hover:bg-brand-50 hover:text-brand-800 dark:hover:bg-brand-950 dark:hover:text-brand-300">{{ $category->name }}</a>
+                                        <a href="{{ route('category', $category) }}" wire:navigate.hover class="block rounded-xl px-3 py-2 font-medium hover:bg-brand-50 hover:text-brand-800 dark:hover:bg-brand-950 dark:hover:text-brand-300">{{ $category->name }}</a>
                                     @endforeach
                                 </div>
                             </div>
                         </div>
                     @endforeach
-                    <a href="{{ route('shop', ['sort' => 'newest']) }}" wire:navigate class="hidden rounded-full px-3 py-2 transition xl:block hover:bg-zinc-100 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-400">New in</a>
-                    <a href="{{ route('shop', ['sale' => 1]) }}" wire:navigate class="rounded-full px-3 py-2 text-amber-600 transition hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/40">Sale</a>
+                    <a href="{{ route('shop', ['sort' => 'newest']) }}" wire:navigate.hover class="hidden rounded-full px-3 py-2 transition xl:block hover:bg-zinc-100 hover:text-brand-700 dark:hover:bg-zinc-800 dark:hover:text-brand-400">New in</a>
+                    <a href="{{ route('shop', ['sale' => 1]) }}" wire:navigate.hover class="rounded-full px-3 py-2 text-amber-600 transition hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/40">Sale</a>
                 </nav>
 
                 <div class="ms-auto flex items-center gap-1 sm:gap-2">
@@ -92,7 +92,7 @@
                     </button>
 
                     @auth
-                        <a href="{{ route('account.wishlist') }}" wire:navigate class="hidden size-10 place-items-center rounded-full transition hover:bg-zinc-100 sm:grid dark:hover:bg-zinc-800" aria-label="Wishlist">
+                        <a href="{{ route('account.wishlist') }}" wire:navigate.hover class="hidden size-10 place-items-center rounded-full transition hover:bg-zinc-100 sm:grid dark:hover:bg-zinc-800" aria-label="Wishlist">
                             <flux:icon.heart variant="outline" class="size-5" />
                         </a>
                     @endauth
@@ -116,24 +116,24 @@
                             <flux:icon.x-mark />
                         </button>
                     </div>
-                    <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2 rounded-xl px-3 py-3 font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-800"><flux:icon.home variant="mini" class="text-brand-600" /> Home</a>
-                    <a href="{{ route('shop') }}" wire:navigate class="flex items-center gap-2 rounded-xl px-3 py-3 font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-800"><flux:icon.squares-2x2 variant="mini" class="text-brand-600" /> Shop all</a>
+                    <a href="{{ route('home') }}" wire:navigate.hover class="flex items-center gap-2 rounded-xl px-3 py-3 font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-800"><flux:icon.home variant="mini" class="text-brand-600" /> Home</a>
+                    <a href="{{ route('shop') }}" wire:navigate.hover class="flex items-center gap-2 rounded-xl px-3 py-3 font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-800"><flux:icon.squares-2x2 variant="mini" class="text-brand-600" /> Shop all</a>
                     @foreach (\App\Models\Category::DEPARTMENTS as $key => $label)
                         <p class="mt-4 px-3 text-xs font-bold tracking-widest text-zinc-400 uppercase">{{ $label }}</p>
                         @foreach ($navCategories->where('department', $key) as $category)
-                            <a href="{{ route('category', $category) }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">{{ $category->name }}</a>
+                            <a href="{{ route('category', $category) }}" wire:navigate.hover class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">{{ $category->name }}</a>
                         @endforeach
                     @endforeach
                     <div class="my-4 border-t"></div>
-                    <a href="{{ route('shop', ['sort' => 'newest']) }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">New in</a>
-                    <a href="{{ route('shop', ['sale' => 1]) }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-zinc-800">Sale</a>
-                    <a href="{{ route('orders.track') }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Track my order</a>
-                    <a href="{{ route('contact') }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Contact us</a>
+                    <a href="{{ route('shop', ['sort' => 'newest']) }}" wire:navigate.hover class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">New in</a>
+                    <a href="{{ route('shop', ['sale' => 1]) }}" wire:navigate.hover class="rounded-xl px-3 py-2.5 font-medium text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-zinc-800">Sale</a>
+                    <a href="{{ route('orders.track') }}" wire:navigate.hover class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Track my order</a>
+                    <a href="{{ route('contact') }}" wire:navigate.hover class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Contact us</a>
                     @auth
-                        <a href="{{ route('account.wishlist') }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">My wishlist</a>
-                        <a href="{{ route('account.orders') }}" wire:navigate class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">My account</a>
+                        <a href="{{ route('account.wishlist') }}" wire:navigate.hover class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">My wishlist</a>
+                        <a href="{{ route('account.orders') }}" wire:navigate.hover class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">My account</a>
                     @else
-                        <a href="{{ route('login') }}" class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">Log in / Sign up</a>
+                        <a href="{{ route('login') }}" class="rounded-xl px-3 py-2.5 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800" wire:navigate.hover>Log in / Sign up</a>
                     @endauth
                 </nav>
             </div>

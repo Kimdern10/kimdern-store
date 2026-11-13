@@ -37,7 +37,7 @@
             <h3 class="text-sm font-bold tracking-widest text-white uppercase">Shop</h3>
             <ul class="mt-4 space-y-2.5 text-sm">
                 @foreach ($navCategories as $category)
-                    <li><a href="{{ route('category', $category) }}" wire:navigate class="transition hover:text-amber-400">{{ $category->name }}</a></li>
+                    <li><a href="{{ route('category', $category) }}" wire:navigate.hover class="transition hover:text-amber-400">{{ $category->name }}</a></li>
                 @endforeach
             </ul>
         </div>
@@ -45,14 +45,14 @@
         <div>
             <h3 class="text-sm font-bold tracking-widest text-white uppercase">Help</h3>
             <ul class="mt-4 space-y-2.5 text-sm">
-                <li><a href="{{ route('orders.track') }}" wire:navigate class="transition hover:text-amber-400">Track my order</a></li>
-                <li><a href="{{ route('shipping') }}" wire:navigate class="transition hover:text-amber-400">Delivery & returns</a></li>
-                <li><a href="{{ route('contact') }}" wire:navigate class="transition hover:text-amber-400">Contact us</a></li>
-                <li><a href="{{ route('privacy') }}" wire:navigate class="transition hover:text-amber-400">Privacy & cookies</a></li>
+                <li><a href="{{ route('orders.track') }}" wire:navigate.hover class="transition hover:text-amber-400">Track my order</a></li>
+                <li><a href="{{ route('shipping') }}" wire:navigate.hover class="transition hover:text-amber-400">Delivery & returns</a></li>
+                <li><a href="{{ route('contact') }}" wire:navigate.hover class="transition hover:text-amber-400">Contact us</a></li>
+                <li><a href="{{ route('privacy') }}" wire:navigate.hover class="transition hover:text-amber-400">Privacy & cookies</a></li>
                 @auth
-                    <li><a href="{{ route('account.orders') }}" wire:navigate class="transition hover:text-amber-400">My orders</a></li>
+                    <li><a href="{{ route('account.orders') }}" wire:navigate.hover class="transition hover:text-amber-400">My orders</a></li>
                 @else
-                    <li><a href="{{ route('login') }}" wire:navigate class="transition hover:text-amber-400">Log in / Sign up</a></li>
+                    <li><a href="{{ route('login') }}" wire:navigate.hover class="transition hover:text-amber-400">Log in / Sign up</a></li>
                 @endauth
             </ul>
         </div>

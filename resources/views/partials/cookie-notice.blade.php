@@ -25,7 +25,7 @@
             <span class="text-2xl" aria-hidden="true">🍪</span>
             <p class="text-sm text-zinc-600 dark:text-zinc-400">
                 We use cookies to keep your cart and login working. That's all, no ad trackers.
-                <a href="{{ route('privacy') }}" class="font-semibold text-brand-700 underline underline-offset-2 dark:text-brand-400">Learn more</a>
+                <a href="{{ route('privacy') }}" class="font-semibold text-brand-700 underline underline-offset-2 dark:text-brand-400" wire:navigate.hover>Learn more</a>
             </p>
         </div>
         <flux:button size="sm" variant="primary" class="shrink-0" x-on:click="accept()">Okay</flux:button>

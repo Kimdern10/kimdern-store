@@ -79,11 +79,11 @@ new #[Layout('layouts::shop')] class extends Component {
     <x-order-details :order="$order" class="mt-10" />
 
     <div class="mt-10 flex flex-wrap justify-center gap-3">
-        <flux:button href="{{ route('shop') }}" wire:navigate variant="primary">Continue shopping</flux:button>
+        <flux:button href="{{ route('shop') }}" wire:navigate.hover variant="primary">Continue shopping</flux:button>
         @auth
-            <flux:button href="{{ route('account.orders') }}" wire:navigate>My orders</flux:button>
+            <flux:button href="{{ route('account.orders') }}" wire:navigate.hover>My orders</flux:button>
         @else
-            <flux:button href="{{ route('register') }}">Create an account to track orders easily</flux:button>
+            <flux:button href="{{ route('register') }}" wire:navigate.hover>Create an account to track orders easily</flux:button>
         @endauth
     </div>
 </div>

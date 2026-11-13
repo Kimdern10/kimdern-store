@@ -68,7 +68,7 @@ new #[Layout('layouts::admin'), Title('Products')] class extends Component {
 <div class="space-y-6">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <flux:heading size="xl">Products</flux:heading>
-        <flux:button variant="primary" icon="plus" :href="route('admin.products.create')">Add product</flux:button>
+        <flux:button variant="primary" icon="plus" :href="route('admin.products.create')" wire:navigate.hover>Add product</flux:button>
     </div>
 
     <div class="flex flex-col gap-3 sm:flex-row">

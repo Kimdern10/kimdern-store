@@ -75,7 +75,7 @@ new #[Layout('layouts::shop')] class extends Component {
                             <p class="mt-1 text-sm text-zinc-500">Free on orders of {{ naira($quote['zone']->free_over) }} or more.</p>
                         @endif
                     @else
-                        <p>We don't deliver to {{ $state }} yet. <a href="{{ route('contact') }}" wire:navigate class="font-semibold text-brand-700 underline">Contact us</a> and we'll arrange it.</p>
+                        <p>We don't deliver to {{ $state }} yet. <a href="{{ route('contact') }}" wire:navigate.hover class="font-semibold text-brand-700 underline">Contact us</a> and we'll arrange it.</p>
                     @endif
                 </div>
             @endif
@@ -107,7 +107,7 @@ new #[Layout('layouts::shop')] class extends Component {
             <ul>
                 <li>You can return unused items in their original packaging within <strong>7 days</strong> of delivery.</li>
                 <li>For hygiene reasons, opened skincare, makeup, fragrance and worn wigs can only be returned if they arrived damaged or were the wrong item.</li>
-                <li>Message us on WhatsApp or through the <a href="{{ route('contact') }}" wire:navigate class="font-semibold text-brand-700 underline dark:text-brand-400">contact page</a> with your order number and photos, and we'll arrange the return.</li>
+                <li>Message us on WhatsApp or through the <a href="{{ route('contact') }}" wire:navigate.hover class="font-semibold text-brand-700 underline dark:text-brand-400">contact page</a> with your order number and photos, and we'll arrange the return.</li>
                 <li>Refunds go back to the card or bank account you paid with within 5 working days of us receiving the item.</li>
             </ul>
         </section>

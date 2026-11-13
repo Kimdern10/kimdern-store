@@ -76,7 +76,7 @@ new #[Layout('layouts::admin'), Title('Orders')] class extends Component {
                 @forelse ($this->orders as $order)
                     <tr wire:key="order-{{ $order->id }}" class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
                         <td class="px-5 py-3">
-                            <a href="{{ route('admin.orders.show', $order) }}" class="font-semibold text-brand-700 hover:underline dark:text-brand-400">{{ $order->number }}</a>
+                            <a href="{{ route('admin.orders.show', $order) }}" class="font-semibold text-brand-700 hover:underline dark:text-brand-400" wire:navigate.hover>{{ $order->number }}</a>
                             <p class="text-xs text-zinc-500">{{ $order->created_at->format('j M Y, g:i a') }} · {{ $order->items_count }} {{ \Illuminate\Support\Str::plural('line', $order->items_count) }}</p>
                         </td>
                         <td class="px-5 py-3">{{ $order->name }}<p class="text-xs text-zinc-500">{{ $order->phone }} · {{ $order->state }}</p></td>

@@ -51,7 +51,7 @@
                             <flux:icon.moon variant="outline" class="size-5 dark:hidden" />
                             <flux:icon.sun variant="outline" class="hidden size-5 dark:block" />
                         </button>
-                        <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-700 dark:border-zinc-800 dark:hover:text-brand-400">
+                        <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 px-4 py-2 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-700 dark:border-zinc-800 dark:hover:text-brand-400" wire:navigate.hover>
                             <flux:icon.arrow-left variant="micro" /> Back to shop
                         </a>
                     </div>
@@ -64,7 +64,7 @@
                 </div>
 
                 <p class="px-5 pb-6 text-center text-xs text-zinc-500 sm:px-8">
-                    Protected by secure encryption. Read our <a href="{{ route('privacy') }}" class="font-semibold text-brand-700 hover:underline dark:text-brand-400">privacy policy</a>.
+                    Protected by secure encryption. Read our <a href="{{ route('privacy') }}" class="font-semibold text-brand-700 hover:underline dark:text-brand-400" wire:navigate.hover>privacy policy</a>.
                 </p>
             </main>
         </div>

@@ -61,7 +61,7 @@ new #[Layout('layouts::admin'), Title('Back in stock requests')] class extends C
                         <td class="px-5 py-3"><p class="font-semibold">{{ $row['name'] }}</p>@if ($row['option'])<p class="text-xs text-zinc-500">{{ $row['option'] }}</p>@endif</td>
                         <td class="px-5 py-3"><flux:badge color="amber">{{ $row['waiting'] }}</flux:badge></td>
                         <td class="px-5 py-3 text-zinc-500">{{ $row['latest'] }}</td>
-                        <td class="px-5 py-3 text-end"><flux:button size="sm" :href="route('admin.products.edit', $row['product_id'])">Restock</flux:button></td>
+                        <td class="px-5 py-3 text-end"><flux:button size="sm" :href="route('admin.products.edit', $row['product_id'])" wire:navigate.hover>Restock</flux:button></td>
                     </tr>
                 @empty
                     <tr><td colspan="4" class="px-5 py-12 text-center text-zinc-500">Nobody is waiting for anything right now.</td></tr>

@@ -74,7 +74,7 @@ new #[Layout('layouts::admin'), Title('Order')] class extends Component {
 <div class="space-y-6">
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-            <a href="{{ route('admin.orders') }}" class="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400">← Orders</a>
+            <a href="{{ route('admin.orders') }}" class="text-sm font-semibold text-brand-700 hover:underline dark:text-brand-400" wire:navigate.hover>← Orders</a>
             <div class="mt-1 flex items-center gap-3">
                 <flux:heading size="xl">{{ $order->number }}</flux:heading>
                 <flux:badge :color="$order->status->colour()">{{ $order->status->label() }}</flux:badge>

@@ -222,8 +222,8 @@ new #[Layout('layouts::shop')] class extends Component {
 
     <div class="container-shop pt-6">
         <nav class="text-sm text-zinc-500" aria-label="Breadcrumb">
-            <a href="{{ route('home') }}" wire:navigate class="hover:text-brand-700">Home</a> <span class="mx-1">/</span>
-            <a href="{{ route('category', $product->category) }}" wire:navigate class="hover:text-brand-700">{{ $product->category->name }}</a> <span class="mx-1">/</span>
+            <a href="{{ route('home') }}" wire:navigate.hover class="hover:text-brand-700">Home</a> <span class="mx-1">/</span>
+            <a href="{{ route('category', $product->category) }}" wire:navigate.hover class="hover:text-brand-700">{{ $product->category->name }}</a> <span class="mx-1">/</span>
             <span class="text-zinc-800 dark:text-zinc-200">{{ $product->name }}</span>
         </nav>
 
@@ -392,7 +392,7 @@ new #[Layout('layouts::shop')] class extends Component {
                                 <li><strong>{{ $zone->name }}:</strong> {{ naira($zone->fee) }} · {{ $zone->eta }}@if ($zone->free_over) · free over {{ naira($zone->free_over) }}@endif</li>
                             @endforeach
                         </ul>
-                        <p>Not happy? Return unused items in their original packaging within 7 days of delivery. <a href="{{ route('shipping') }}" wire:navigate class="font-semibold text-brand-700 underline dark:text-brand-400">Read the full policy</a>.</p>
+                        <p>Not happy? Return unused items in their original packaging within 7 days of delivery. <a href="{{ route('shipping') }}" wire:navigate.hover class="font-semibold text-brand-700 underline dark:text-brand-400">Read the full policy</a>.</p>
                     </div>
                 </div>
             </div>
@@ -442,7 +442,7 @@ new #[Layout('layouts::shop')] class extends Component {
                             </form>
                         @endif
                     @else
-                        <p class="text-sm text-zinc-600 dark:text-zinc-400">Bought this? <a href="{{ route('login') }}" wire:navigate class="font-semibold text-brand-700 underline dark:text-brand-400">Log in</a> to write a review.</p>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400">Bought this? <a href="{{ route('login') }}" wire:navigate.hover class="font-semibold text-brand-700 underline dark:text-brand-400">Log in</a> to write a review.</p>
                     @endauth
                 </div>
             </div>
