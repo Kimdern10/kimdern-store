@@ -105,7 +105,7 @@ new #[Layout('layouts::shop')] class extends Component {
     {
         $this->resetErrorBag('couponCode');
 
-        if ($problem = $this->cart->applyCoupon($this->couponCode)) {
+        if ($problem = $this->cart->applyCoupon($this->couponCode, $this->email ?: null, $this->phone ?: null, Auth::id())) {
             $this->addError('couponCode', $problem);
 
             return;

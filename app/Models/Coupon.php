@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
+use App\Support\CustomerIdentity;
 use Database\Factories\CouponFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -18,11 +20,13 @@ use Illuminate\Support\Carbon;
  * @property int $min_subtotal
  * @property int|null $max_uses
  * @property int $used_count
+ * @property bool $first_order_only Only for people who have never had a paid order
+ * @property bool $once_per_customer Each person can use it once
  * @property Carbon|null $starts_at
  * @property Carbon|null $expires_at
  * @property bool $is_active
  */
-#[Fillable(['code', 'description', 'type', 'value', 'min_subtotal', 'max_uses', 'starts_at', 'expires_at', 'is_active'])]
+#[Fillable(['code', 'description', 'type', 'value', 'min_subtotal', 'max_uses', 'first_order_only', 'once_per_customer', 'starts_at', 'expires_at', 'is_active'])]
 class Coupon extends Model
 {
     /** @use HasFactory<CouponFactory> */
@@ -38,6 +42,8 @@ class Coupon extends Model
             'starts_at' => 'datetime',
             'expires_at' => 'datetime',
             'is_active' => 'boolean',
+            'first_order_only' => 'boolean',
+            'once_per_customer' => 'boolean',
         ];
     }
 
@@ -69,6 +75,45 @@ class Coupon extends Model
             $subtotal < $this->min_subtotal => 'Spend at least '.naira($this->min_subtotal).' to use this code.',
             default => null,
         };
+    }
+
+    /**
+     * Why this person can't use the code, or null when they can. A person is matched by their
+     * email (cleaned up, so Gmail dots and "+extra" don't help), their phone number or their account.
+     * Only paid orders count, so an unpaid or cancelled order doesn't use up the code.
+     */
+    public function problemForCustomer(?string $email = null, ?string $phone = null, ?int $userId = null): ?string
+    {
+        if (! $this->first_order_only && ! $this->once_per_customer) {
+            return null;
+        }
+
+        $emailKey = CustomerIdentity::email($email);
+        $phoneKey = CustomerIdentity::phone($phone);
+
+        if (! $emailKey && ! $phoneKey && ! $userId) {
+            return null;
+        }
+
+        $theirPaidOrders = Order::query()
+            ->whereNotNull('paid_at')
+            ->where('status', '!=', OrderStatus::Cancelled)
+            ->where(function ($query) use ($emailKey, $phoneKey, $userId) {
+                $query->whereRaw('1 = 0')
+                    ->when($emailKey, fn ($q) => $q->orWhere('email_key', $emailKey))
+                    ->when($phoneKey, fn ($q) => $q->orWhere('phone_key', $phoneKey))
+                    ->when($userId, fn ($q) => $q->orWhere('user_id', $userId));
+            });
+
+        if ($this->first_order_only && (clone $theirPaidOrders)->exists()) {
+            return "{$this->code} is for first orders only, and you've ordered with us before. Thank you for coming back!";
+        }
+
+        if ($this->once_per_customer && (clone $theirPaidOrders)->where('coupon_code', $this->code)->exists()) {
+            return "You've already used {$this->code}. Each customer can use it once.";
+        }
+
+        return null;
     }
 
     /**

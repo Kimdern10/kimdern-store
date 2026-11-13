@@ -33,6 +33,10 @@ new #[Layout('layouts::admin'), Title('Coupons')] class extends Component {
 
     public bool $is_active = true;
 
+    public bool $first_order_only = false;
+
+    public bool $once_per_customer = false;
+
     /** @return Collection<int, Coupon> */
     #[Computed]
     public function coupons(): Collection
@@ -60,6 +64,8 @@ new #[Layout('layouts::admin'), Title('Coupons')] class extends Component {
         $this->starts_at = (string) $coupon->starts_at?->format('Y-m-d');
         $this->expires_at = (string) $coupon->expires_at?->format('Y-m-d');
         $this->is_active = $coupon->is_active;
+        $this->first_order_only = $coupon->first_order_only;
+        $this->once_per_customer = $coupon->once_per_customer;
         Flux::modal('coupon-form')->show();
     }
 
@@ -77,6 +83,8 @@ new #[Layout('layouts::admin'), Title('Coupons')] class extends Component {
             'starts_at' => ['nullable', 'date'],
             'expires_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
             'is_active' => ['boolean'],
+            'first_order_only' => ['boolean'],
+            'once_per_customer' => ['boolean'],
         ]);
 
         Coupon::query()->updateOrCreate(['id' => $this->editingId], [
@@ -89,6 +97,8 @@ new #[Layout('layouts::admin'), Title('Coupons')] class extends Component {
             'starts_at' => $data['starts_at'] ?: null,
             'expires_at' => $data['expires_at'] ? \Illuminate\Support\Carbon::parse($data['expires_at'])->endOfDay() : null,
             'is_active' => $data['is_active'],
+            'first_order_only' => $data['first_order_only'],
+            'once_per_customer' => $data['once_per_customer'],
         ]);
 
         Flux::modal('coupon-form')->close();
@@ -104,7 +114,7 @@ new #[Layout('layouts::admin'), Title('Coupons')] class extends Component {
 
     private function resetForm(): void
     {
-        $this->reset('editingId', 'code', 'description', 'type', 'value', 'min_subtotal', 'max_uses', 'starts_at', 'expires_at', 'is_active');
+        $this->reset('editingId', 'code', 'description', 'type', 'value', 'min_subtotal', 'max_uses', 'starts_at', 'expires_at', 'is_active', 'first_order_only', 'once_per_customer');
         $this->resetValidation();
     }
 }; ?>
@@ -127,7 +137,7 @@ new #[Layout('layouts::admin'), Title('Coupons')] class extends Component {
                 @forelse ($this->coupons as $coupon)
                     <tr wire:key="coupon-{{ $coupon->id }}">
                         <td class="px-5 py-3"><span class="rounded-lg bg-amber-100 px-2 py-1 font-mono font-bold text-amber-900 dark:bg-amber-900/40 dark:text-amber-200">{{ $coupon->code }}</span><p class="mt-1 text-xs text-zinc-500">{{ $coupon->description }}</p></td>
-                        <td class="px-5 py-3 font-semibold">{{ $coupon->summary() }}@if ($coupon->min_subtotal)<p class="text-xs font-normal text-zinc-500">Min. spend {{ naira($coupon->min_subtotal) }}</p>@endif</td>
+                        <td class="px-5 py-3 font-semibold">{{ $coupon->summary() }}@if ($coupon->first_order_only)<p class="text-xs font-normal text-brand-700 dark:text-brand-400">First order only</p>@endif @if ($coupon->once_per_customer)<p class="text-xs font-normal text-brand-700 dark:text-brand-400">Once per customer</p>@endif@if ($coupon->min_subtotal)<p class="text-xs font-normal text-zinc-500">Min. spend {{ naira($coupon->min_subtotal) }}</p>@endif</td>
                         <td class="px-5 py-3">{{ $coupon->used_count }}{{ $coupon->max_uses ? ' / '.$coupon->max_uses : '' }}</td>
                         <td class="px-5 py-3 text-xs text-zinc-500">{{ $coupon->starts_at?->format('j M Y') ?? 'Now' }} → {{ $coupon->expires_at?->format('j M Y') ?? 'No end' }}</td>
                         <td class="px-5 py-3">
@@ -161,6 +171,10 @@ new #[Layout('layouts::admin'), Title('Coupons')] class extends Component {
                 <flux:input wire:model="max_uses" type="number" label="Max uses" placeholder="Unlimited" />
                 <flux:input wire:model="starts_at" type="date" label="Starts" />
                 <flux:input wire:model="expires_at" type="date" label="Ends" />
+            </div>
+            <div class="space-y-3 rounded-xl bg-zinc-50 p-4 dark:bg-zinc-800/50">
+                <flux:switch wire:model="first_order_only" label="First order only" description="Only for people who have never paid for an order before." />
+                <flux:switch wire:model="once_per_customer" label="Once per customer" description="Each person can use it one time. We match their email, phone number and account." />
             </div>
             <flux:switch wire:model="is_active" label="Active" />
             <div class="flex justify-end gap-2">

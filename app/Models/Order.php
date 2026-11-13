@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Support\CustomerIdentity;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -61,6 +62,14 @@ class Order extends Model
             'paid_at' => 'datetime',
             'transfer_reported_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Order $order) {
+            $order->email_key = CustomerIdentity::email($order->email);
+            $order->phone_key = CustomerIdentity::phone($order->phone);
+        });
     }
 
     public function getRouteKeyName(): string

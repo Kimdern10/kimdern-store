@@ -13,6 +13,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(ShopSeeder::class);
 
+        // Save the sample photos on this site as small WebP files instead of loading them from Unsplash.
+        $this->command?->call('app:localise-images');
+
         if (app()->isLocal()) {
             $this->call(DemoOrderSeeder::class);
         }

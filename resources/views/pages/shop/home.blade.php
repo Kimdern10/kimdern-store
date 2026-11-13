@@ -111,7 +111,7 @@ new #[Layout('layouts::shop')] class extends Component {
                         class="absolute inset-0"
                         aria-roledescription="slide"
                     >
-                        <img src="{{ $banner->imageUrl() }}" alt="" class="absolute inset-0 size-full object-cover" :class="active === {{ $i }} && 'scale-110'" style="transition: transform 7s ease-out" @if ($i > 0) loading="lazy" @else fetchpriority="high" @endif>
+                        <img decoding="async" src="{{ $banner->imageUrl() }}" alt="" class="absolute inset-0 size-full object-cover" :class="active === {{ $i }} && 'scale-110'" style="transition: transform 7s ease-out" @if ($i > 0) loading="lazy" @else fetchpriority="high" @endif>
                         <div class="absolute inset-0 bg-gradient-to-r from-brand-950/90 via-brand-950/55 to-transparent"></div>
                         <div class="relative flex h-full max-w-2xl flex-col justify-end gap-5 p-7 pb-20 sm:justify-center sm:p-14">
                             @if ($banner->eyebrow)
@@ -218,7 +218,7 @@ new #[Layout('layouts::shop')] class extends Component {
             @foreach ($this->categories as $i => $category)
                 <a href="{{ route('category', $category) }}" wire:navigate.hover data-reveal="{{ ($i % 4) * 80 }}" class="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-zinc-200 sm:aspect-square dark:bg-zinc-800">
                     @if ($category->imageUrl())
-                        <img src="{{ $category->imageUrl() }}" alt="" loading="lazy" class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-110">
+                        <img decoding="async" src="{{ $category->imageUrl() }}" alt="" loading="lazy" class="absolute inset-0 size-full object-cover transition duration-700 group-hover:scale-110">
                     @endif
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-950/85 via-brand-950/10 to-transparent transition group-hover:from-brand-950/95"></div>
                     <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4 sm:p-5">
@@ -286,9 +286,9 @@ new #[Layout('layouts::shop')] class extends Component {
 
     {{-- Beauty / Fashion split --}}
     <section class="container-shop mt-24 grid gap-5 lg:grid-cols-2" aria-label="Departments">
-        @foreach ([['beauty', 'Beauty edit', 'Skincare, makeup & scents that work for melanin-rich skin.', 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1200&q=80&auto=format&fit=crop'], ['fashion', 'Fashion edit', 'Fresh fits for work, weekends and every owambe.', 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80&auto=format&fit=crop']] as $i => [$department, $heading, $text, $image])
+        @foreach ([['beauty', 'Beauty edit', 'Skincare, makeup & scents that work for melanin-rich skin.', $this->categories->firstWhere('slug', 'makeup')?->imageUrl(false) ?? \App\Support\Media::placeholder()], ['fashion', 'Fashion edit', 'Fresh fits for work, weekends and every owambe.', $this->categories->firstWhere('slug', 'women')?->imageUrl(false) ?? \App\Support\Media::placeholder()]] as $i => [$department, $heading, $text, $image])
             <a href="{{ route('shop', ['department' => $department]) }}" wire:navigate.hover data-reveal="{{ $i * 120 }}" class="group relative flex min-h-80 items-end overflow-hidden rounded-[2rem] p-8 sm:min-h-96 sm:p-10">
-                <img src="{{ $image }}" alt="" loading="lazy" class="absolute inset-0 size-full object-cover transition duration-1000 group-hover:scale-105">
+                <img decoding="async" src="{{ $image }}" alt="" loading="lazy" class="absolute inset-0 size-full object-cover transition duration-1000 group-hover:scale-105">
                 <div class="absolute inset-0 {{ $i === 0 ? 'bg-gradient-to-t from-brand-950/90 to-brand-950/10' : 'bg-gradient-to-t from-zinc-950/90 to-zinc-950/10' }}"></div>
                 <div class="relative">
                     <h2 class="text-3xl font-extrabold text-white sm:text-4xl">{{ $heading }}</h2>

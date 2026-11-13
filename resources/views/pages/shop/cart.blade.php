@@ -47,7 +47,9 @@ new #[Layout('layouts::shop')] class extends Component {
             return;
         }
 
-        if ($problem = $this->cart->applyCoupon($this->couponCode)) {
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        if ($problem = $this->cart->applyCoupon($this->couponCode, $user?->email, $user?->phone, $user?->id)) {
             $this->addError('couponCode', $problem);
 
             return;

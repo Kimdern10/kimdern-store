@@ -1,6 +1,7 @@
 {{-- Log in, sign up and password pages: a brand photo panel beside the form (the panel hides on phones). --}}
 @php
     $store = \App\Models\Setting::values();
+    $panelImage = \App\Models\Banner::query()->where('is_active', true)->orderBy('sort_order')->skip(2)->first()?->imageUrl() ?? \App\Models\Banner::query()->first()?->imageUrl();
     $spotlight = \App\Models\Review::query()->where('is_approved', true)->where('rating', 5)->latest()->first();
 @endphp
 <!DOCTYPE html>
@@ -13,7 +14,7 @@
         <div class="grid min-h-svh grid-cols-1 lg:grid-cols-[1.05fr_1fr]">
             {{-- Brand panel --}}
             <aside class="relative hidden overflow-hidden bg-brand-950 lg:block" aria-hidden="true">
-                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1400&q=80&auto=format&fit=crop" alt="" class="absolute inset-0 size-full object-cover opacity-60">
+                @if ($panelImage)<img src="{{ $panelImage }}" alt="" decoding="async" class="absolute inset-0 size-full object-cover opacity-60">@endif
                 <div class="absolute inset-0 bg-gradient-to-br from-brand-950/95 via-brand-900/70 to-brand-950/40"></div>
                 <div class="absolute -end-24 -top-24 size-96 rounded-full bg-amber-500/20 blur-3xl"></div>
 

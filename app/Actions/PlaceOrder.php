@@ -48,6 +48,14 @@ class PlaceOrder
 
         $coupon = $this->cart->coupon();
 
+        if ($coupon && ($problem = $coupon->problemForCustomer($details['email'], $details['phone'], $user?->id))) {
+            $this->cart->removeCoupon();
+
+            throw ValidationException::withMessages([
+                'cart' => $problem.' We have taken the code off your order. Please check the new total and place your order again.',
+            ]);
+        }
+
         $order = DB::transaction(function () use ($lines, $details, $paymentMethod, $user, $totals, $coupon): Order {
             $this->reserveStock($lines);
 

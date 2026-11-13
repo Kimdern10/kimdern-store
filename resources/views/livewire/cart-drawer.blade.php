@@ -85,7 +85,7 @@ new class extends Component {
                         @foreach ($this->cart->lines() as $line)
                             <li wire:key="drawer-{{ $line->key }}" class="flex gap-4 py-4">
                                 <a href="{{ route('product', $line->product) }}" wire:navigate.hover class="shrink-0">
-                                    <img src="{{ $line->product->imageUrl() }}" alt="{{ $line->product->name }}" class="size-20 rounded-xl object-cover" loading="lazy">
+                                    <img decoding="async" src="{{ $line->product->imageUrl() }}" alt="{{ $line->product->name }}" class="size-20 rounded-xl object-cover" loading="lazy">
                                 </a>
                                 <div class="flex min-w-0 flex-1 flex-col">
                                     <a href="{{ route('product', $line->product) }}" wire:navigate.hover class="truncate font-semibold hover:text-brand-700 dark:hover:text-brand-400">{{ $line->product->name }}</a>

@@ -6,7 +6,7 @@
 <article wire:key="card-{{ $product->id }}" data-reveal="{{ $delay }}" {{ $attributes->class('group relative flex flex-col') }}>
     <div class="relative aspect-[4/5] overflow-hidden rounded-3xl bg-zinc-100 dark:bg-zinc-900">
         <a href="{{ route('product', $product) }}" wire:navigate.hover class="block size-full" tabindex="-1">
-            <img src="{{ $product->imageUrl() }}" alt="{{ $product->name }}" loading="lazy" class="size-full object-cover transition duration-700 ease-out group-hover:scale-105">
+            <img decoding="async" src="{{ $product->imageUrl() }}" alt="{{ $product->name }}" loading="lazy" width="600" height="750" class="size-full object-cover transition duration-700 ease-out group-hover:scale-105">
         </a>
 
         <div class="pointer-events-none absolute start-3 top-3 flex flex-col gap-1.5">

@@ -4,6 +4,7 @@ namespace App\Support;
 
 use GdImage;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -43,6 +44,27 @@ class ImageOptimizer
     /**
      * Store a logo as a single WebP file (transparency kept) and return its path.
      */
+    /**
+     * Download a photo from the web and store it like an upload (large + small WebP).
+     */
+    public function storeFromUrl(string $url, string $directory = 'products'): string
+    {
+        $response = Http::timeout(60)->retry(2, 1000)->get($url);
+        $temp = tempnam(sys_get_temp_dir(), 'img');
+
+        if ($temp === false) {
+            throw new RuntimeException('Could not create a temporary file.');
+        }
+
+        try {
+            file_put_contents($temp, $response->body());
+
+            return $this->store(new UploadedFile($temp, 'photo.jpg', null, null, true), $directory);
+        } finally {
+            @unlink($temp);
+        }
+    }
+
     public function storeLogo(UploadedFile $file): string
     {
         $path = 'branding/logo-'.Str::lower((string) Str::ulid()).'.webp';

@@ -166,7 +166,7 @@ class Cart
     /**
      * Apply a coupon code. Returns a message saying why it can't be used, or null on success.
      */
-    public function applyCoupon(string $code): ?string
+    public function applyCoupon(string $code, ?string $email = null, ?string $phone = null, ?int $userId = null): ?string
     {
         $coupon = Coupon::findByCode($code);
 
@@ -174,7 +174,7 @@ class Cart
             return 'That code is not valid.';
         }
 
-        if ($problem = $coupon->problemWith($this->subtotal())) {
+        if ($problem = $coupon->problemWith($this->subtotal()) ?? $coupon->problemForCustomer($email, $phone, $userId)) {
             return $problem;
         }
 

@@ -196,7 +196,7 @@ class ShopSeeder extends Seeder
     private function seedCoupons(): void
     {
         Coupon::query()->updateOrCreate(['code' => 'WELCOME10'], [
-            'description' => '10% off your first order', 'type' => 'percent', 'value' => 10, 'min_subtotal' => 0, 'is_active' => true,
+            'description' => '10% off your first order', 'type' => 'percent', 'value' => 10, 'min_subtotal' => 0, 'first_order_only' => true, 'once_per_customer' => true, 'is_active' => true,
         ]);
 
         Coupon::query()->updateOrCreate(['code' => 'GLOW5K'], [
